@@ -1,0 +1,169 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../base' as *;
+@use '../../utils' as u;
+
+/*
+
+    Sign up
+    
+*/
+
+.auth__form {
+  @include u.flex(grid);
+  width: 100%;
+  gap: size(3xl)
+    /* 24px */
+  ;
+
+  &>form {
+    &>div {
+      @include u.flex(grid);
+
+      &>div:not(.password-rules) {
+        position: relative;
+        @include u.flex(grid);
+        margin-bottom: size(na)
+          /* 16*/
+        ;
+
+        svg {
+          width: 1rem;
+          height: 1rem;
+        }
+
+        &>label {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border-width: 0;
+        }
+
+        &>input {
+          &.input-notvalid {
+            color: u.color(red, 200);
+            background-color: u.color(red, 100);
+          }
+        }
+
+        &>div {
+          @include u.right(0.5rem);
+          @include u.flex(flex, center, center);
+          gap: 0.5rem;
+        }
+      }
+
+      & .password-rules {
+        overflow: hidden;
+        transition: 0.3s ease-in;
+
+        &.hide {
+          height: 0;
+        }
+
+        &.active {
+          height: 100px;
+          margin-bottom: size(na)
+            /* 16*/
+          ;
+        }
+
+        ul {
+          padding-left: 0.1rem;
+
+          li {
+            @include u.flex(flex, center);
+            gap: 0.5rem;
+
+            svg {
+              width: 0.8rem;
+              height: 0.8rem;
+
+              &.red {
+                fill: u.color(red, 200);
+              }
+
+              &.green {
+                stroke: u.color(black, 200);
+                fill: u.color(black, 200);
+              }
+            }
+          }
+        }
+      }
+
+      &>p {
+        color: u.color(red, 200);
+        overflow: hidden;
+        transition: 0.3s ease;
+        text-align: start;
+
+        &.hide {
+          height: 0;
+        }
+
+        &.active {
+          height: 30px;
+        }
+      }
+
+      &>button {
+        &.continue__with {
+          margin-top: 1rem;
+        }
+      }
+    }
+  }
+
+  &>div {
+    position: relative;
+
+    &>div:first-child {
+      @include u.flex(flex, center);
+      position: absolute;
+      inset: 0;
+
+      &>span {
+        width: 100%;
+        border-top-width: 2px;
+      }
+    }
+
+    &>div:last-child {
+      position: relative;
+      @include u.flex(flex, center, center);
+      text-transform: uppercase;
+      font-size: size(ssm);
+      line-height: size(na);
+
+      &>span {
+        background-color: hsl(var(--background));
+        padding-inline: 0.5rem;
+        color: hsl(var(--muted-foreground));
+      }
+    }
+  }
+
+  &>button {
+    &>* {
+      margin-right: 0.5rem
+        /* 8px */
+      ;
+      height: size(na)
+        /* 16px */
+      ;
+      width: size(na)
+        /* 16px */
+      ;
+    }
+  }
+}

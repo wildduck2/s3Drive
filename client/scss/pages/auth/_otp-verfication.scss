@@ -1,0 +1,89 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../base' as *;
+@use '../../utils' as u;
+
+/*
+
+    Sign up step 2
+    
+*/
+
+.signup__step {
+  @include u.flex(grid, center, cetner);
+  place-content: center;
+}
+
+.otpverification,
+.complete__forget__password {
+  @include u.flex(grid);
+  gap: 0.4rem;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid u.color(black, 300);
+
+  @include u.breakpoint('small') {
+    max-width: 450px;
+  }
+
+  @include u.breakpoint('xsmall') {
+    max-width: 450px;
+  }
+
+  @include u.breakpoint('medium') {
+    max-width: 725px;
+    padding-block: 6rem;
+    padding-inline: 11rem;
+  }
+
+  &__header {
+    @include u.flex(grid);
+    place-items: center;
+    gap: 0.75rem;
+
+    &__title {
+      font-size: size(2xl);
+      line-height: 1.75rem;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    &__description {
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      max-width: 90%;
+      color: hsl(var(--muted-foreground));
+      text-align: center;
+    }
+  }
+
+  &__content {
+    @include u.flex(grid);
+    gap: 1.75rem;
+    place-items: center;
+    padding-block-start: 2rem;
+
+    & div[data-input-otp-container] {
+      gap: 0;
+
+      @include u.breakpoint('small') {
+        gap: 0.5rem;
+      }
+    }
+
+    & .slot {
+      @include u.breakpoint-down('xsmall') {
+        width: 2rem;
+        height: 2.2rem;
+      }
+    }
+  }
+
+  &>button {
+    width: fit-content;
+    place-self: center;
+  }
+}

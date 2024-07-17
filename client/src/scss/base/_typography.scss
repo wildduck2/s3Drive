@@ -1,0 +1,65 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../utils/functions' as u;
+
+/*
+
+    Typography
+
+*/
+a,
+a:visited,
+a:active {
+  text-decoration: none;
+  font-size: size(na);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-size: size(na);
+  font-weight: 500;
+
+  transition-property: fon-size;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+h5,
+h6,
+p {
+  transition-property: fon-size;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+  font-size: size(md);
+  font-weight: 500;
+}
+
+$size: (
+  sm: #{u.rem(11)},
+  ssm: #{u.rem(12)},
+  md: #{u.rem(13)},
+  smd: #{u.rem(14.4)},
+  na: #{u.rem(16)},
+  lg: #{u.rem(19)},
+  xl: #{u.rem(20)},
+  2xl: #{u.rem(22)},
+  3xl: #{u.rem(24)},
+  4xl: #{u.rem(32)},
+  5xl: #{u.rem(40)},
+);
+
+@function size($size-name) {
+  @if map-has-key($size, $size-name) {
+    @return map-get($size, $size-name);
+  }
+
+  @else {
+    @error "Size not found: #{$size-name}";
+  }
+}

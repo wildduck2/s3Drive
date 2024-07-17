@@ -1,0 +1,78 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../../base' as *;
+@use '../../../utils' as u;
+
+/*
+
+    Email Input Container 
+    
+*/
+
+.email__input__container {
+  @include u.flex(flex, flex-end);
+  gap: 0.5rem;
+
+  /* &:has(.notion__minimal__text__editor__toolbar__pick__content) { */
+  /*   width: 100%; */
+  /* } */
+
+  &__add__email__content {
+    @include u.flex(grid, center, space-between);
+    width: 300px;
+    padding: 0.25rem;
+
+    &__header {
+      margin-bottom: 0.7rem;
+
+      h4 {
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+      }
+
+      p {
+        font-size: 0.8rem;
+        color: hsl(var(--muted-foreground));
+      }
+    }
+
+    &__footer {
+      &>form {
+        @include u.flex(flex, center, space-between);
+        gap: 0.5rem;
+
+        input {
+          height: 34px;
+        }
+
+        button {
+          @include u.buttonToolTip();
+          height: 34px;
+          width: 80px;
+        }
+      }
+    }
+  }
+
+  &__badges {
+    @include u.flex(flex);
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    max-width: 304px;
+
+    &__badge {
+      @include u.flex(flex, center);
+      gap: 0.5rem;
+      width: fit-content;
+
+      svg {
+        width: 0.9rem;
+        cursor: pointer;
+      }
+    }
+  }
+}

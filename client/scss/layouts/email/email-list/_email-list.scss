@@ -1,0 +1,52 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../../base' as *;
+@use '../../../utils' as u;
+
+/*
+
+    Email List
+
+*/
+
+.email__list {
+  height: calc(100vh - 130px - 47px);
+  overflow: visible;
+
+  &__wrapper {
+    @include u.flex(flex);
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+    padding: 1rem;
+    padding-top: 0.25rem;
+
+    &__loading {
+      position: fixed;
+      place-self: center;
+      text-align: center;
+      width: fit-content;
+      translate: 0 -0.9rem;
+      opacity: 0;
+      transition: 0.3s ease-in-out;
+
+      &.show {
+        opacity: 1;
+        translate: 0 0.3rem;
+      }
+    }
+
+    &__content__body {
+      position: relative;
+      overflow: hidden;
+
+      &__row {
+        border: none;
+      }
+    }
+  }
+}

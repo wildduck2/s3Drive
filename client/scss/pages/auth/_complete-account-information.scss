@@ -1,0 +1,101 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../base' as *;
+@use '../../utils' as u;
+
+/*
+
+    Sign up step 3
+    
+*/
+
+.complete__account__information {
+  @include u.flex(grid);
+  gap: 0.4rem;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid hsl(var(--input));
+
+  @include u.breakpoint('small') {
+    max-width: 450px;
+  }
+
+  @include u.breakpoint('xsmall') {
+    max-width: 750px;
+  }
+
+  @include u.breakpoint('medium') {
+    max-width: 1025px;
+    padding-block: 4rem;
+    padding-inline: 6rem;
+  }
+
+  &__header {
+    @include u.flex(grid, center);
+    gap: 1.5rem;
+    place-items: center;
+    text-align: center;
+    margin-bottom: 2rem;
+
+    &__title {
+      max-width: 95%;
+      font-size: calc(size(4xl) - 0.18rem);
+    }
+
+    &__description {
+      max-width: 75%;
+      font-size: calc(size(lg) - 0.28rem);
+      color: hsl(var(--muted-foreground));
+    }
+  }
+
+  &__content {
+    &__form {
+      @include u.flex(grid);
+      gap: 1rem;
+
+      &>div {
+        @include u.flex(grid);
+        gap: 1rem;
+
+        &:first-child,
+        &:nth-child(2) {
+          @include u.flex(flex, center);
+        }
+
+        &>div {
+          @include u.flex(grid, start);
+          gap: 0.4rem;
+          width: 100%;
+
+          &>label {
+            font-size: calc(size(smd) - 0.05rem);
+          }
+
+          &>input {}
+
+          &>button {
+            width: 100%;
+          }
+
+          &>textarea {
+            resize: none;
+            height: 100px;
+          }
+        }
+      }
+
+      &>button {
+        place-self: end;
+      }
+    }
+  }
+
+  //NOTE: IF you added footer
+  /* &__footer { */
+  /*   @include u.flex(flex, center, flex-end); */
+  /* } */
+}

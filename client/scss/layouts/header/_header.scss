@@ -1,0 +1,132 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../base' as *;
+@use '../../utils' as u;
+
+/*
+
+    Header
+
+*/
+
+.header {
+  --max-with: 270px;
+
+  @include u.flex(flex);
+  position: relative;
+  transition: 0.3s ease;
+  width: var(--max-with);
+  min-width: var(--max-with);
+  height: 100vh;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-block: 0.5rem;
+  /* border-right-width: 1px; */
+  transition: 0.3s ease-out;
+
+  &.collapsed {
+    width: 53px;
+    min-width: 53px;
+  }
+
+  #{&}__logo {
+    @include u.flex(flex, center, center);
+    width: 52px;
+    height: 36px;
+    color: hsl(var(--foreground));
+    font-size: size(3xl);
+    font-weight: 600;
+
+    span {
+      @include u.flex(grid, center);
+      place-content: center;
+
+      svg {
+        width: 30px;
+        height: 30px;
+      }
+    }
+  }
+
+  &__nav {
+    @include u.flex(grid, center);
+    gap: 0.25rem;
+    padding-inline: 0.5rem;
+
+    &[data-collapsed='true'] {
+      justify-content: center;
+      padding-inline: 0.5rem;
+    }
+
+    &__link {
+      &:hover {
+        background-color: hsl(var(--accent) / 0.4) !important;
+      }
+
+      &.collabsed {
+        width: 2.25rem;
+        height: 2.25rem;
+      }
+
+      &.menu-button {
+        width: 100%;
+        padding-inline: 0.5rem;
+      }
+
+      &>svg {
+        width: 1.15rem;
+        height: 1.15rem;
+      }
+
+      &:not(.collabsed) {
+        svg {
+          margin-right: 0.5rem;
+        }
+      }
+    }
+
+    &__tooltip {
+      @include u.flex(flex, center);
+      gap: 1rem;
+
+      &__label {
+        margin-left: auto;
+        color: hsl(var(--muted-foreground));
+      }
+    }
+
+    &__dropdown {
+      width: 14rem;
+      margin-left: 0.5rem;
+
+      &__item {
+        gap: 0.5rem;
+      }
+    }
+  }
+
+  &__toggle {
+    @include u.flex(flex, center);
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-inline: 0.5rem;
+    margin-top: auto;
+
+    & button {
+      padding: 0;
+    }
+
+    & .menu-button {
+      padding-inline: inherit;
+    }
+  }
+
+  .ghost-button {
+    background: initial;
+    color: hsl(var(--foreground));
+  }
+}

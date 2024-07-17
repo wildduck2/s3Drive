@@ -1,0 +1,76 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../../base' as *;
+@use '../../../utils' as u;
+
+/*
+
+    Email Selection Bar 
+
+*/
+
+.email__selection__bar {
+  @include u.flex(flex, center);
+  gap: 0.5rem;
+  padding: 0.25rem 1rem;
+  border-block: 1px solid hsl(var(--input));
+  margin-bottom: 0.5rem;
+
+  &>button {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  &>span,
+  &>button {
+    @include u.ghostButton();
+    @include u.buttonToolTip();
+
+    &.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+
+      svg {
+        stroke: currentColor;
+      }
+    }
+
+    button {
+      border: 1px solid hsl(var(--input));
+    }
+
+    svg {
+      stroke-width: 2;
+      transition-property: all;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 150ms;
+    }
+
+    &:first-child:hover {
+      background: none;
+
+      svg {
+        stroke: hsl(var(--background));
+      }
+    }
+
+    &:hover {
+      botton {
+        border-color: hsl(var(--foreground) / 0.6);
+      }
+
+      svg {
+        stroke: hsl(var(--foreground) / 0.6);
+        stroke-width: 2;
+      }
+    }
+  }
+
+  &>div[data-orientation='vertical'] {
+    height: 20px;
+  }
+}

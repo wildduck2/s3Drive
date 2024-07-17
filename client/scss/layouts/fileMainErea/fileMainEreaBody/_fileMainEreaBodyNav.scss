@@ -1,0 +1,50 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../../base' as *;
+@use '../../../utils' as u;
+
+/*
+
+    Main Erea Body
+    
+*/
+
+.file-mainerea__nav-wrapper {
+  &__nav {
+    @include u.flex(flex, center, space-between);
+    position: relative;
+    gap: 0.5rem;
+    margin-block: 1.5rem;
+    padding: 0 0 2.5rem 0;
+    background: transparent;
+
+    & > ul {
+      @include u.flex(flex, center);
+      gap: 0.5rem;
+    }
+
+    &__trigger {
+      @include u.flex(flex, center);
+      gap: 0.5rem;
+      padding: 0.7rem 1.5rem;
+      font-size: size(na);
+      border-radius: 0.5rem;
+
+      &[data-state='active'] {
+        background: hsl(var(--accent)) !important;
+      }
+    }
+
+    &::after {
+      @include u.bottom(0rem);
+      content: '';
+      width: 100%;
+      height: 2px;
+      background: u.color(other, border);
+    }
+  }
+}

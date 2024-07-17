@@ -1,0 +1,117 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../base' as *;
+@use '../../utils' as u;
+
+/*
+
+    Main Erea
+    
+*/
+
+.file-mainerea {
+  @include u.mainSection;
+  gap: 1rem;
+  background-color: u.color(black, 700);
+  overflow: hidden;
+
+  &__header {
+    @include u.flex(grid, center);
+    gap: 0.5rem;
+
+    &>div:first-child {
+      @include u.flex(flex, center, space-between);
+
+      &>* {
+        color: u.color(primary, white-80);
+      }
+
+      h1 {
+        @include u.flex(flex, center, center);
+        gap: 0.5rem;
+        font-size: size(3xl);
+        font-weight: bold;
+      }
+
+      &>div {
+        @include u.flex(flex, center);
+        gap: 1rem;
+        font-size: size(3xl);
+      }
+    }
+
+    &>div:last-child {
+      @include u.flex(flex, center);
+
+      &>div {
+        @include u.flex(flex, center);
+        margin-left: 1.2rem;
+        color: u.color(black, 300);
+
+        &>p {
+          @include u.flex(flex, center);
+          font-size: size(na);
+
+          gap: 0.2rem;
+          padding-inline: 0.5rem;
+        }
+      }
+    }
+  }
+
+  &__nav {
+    position: relative;
+    @include u.flex(flex, center, space-between);
+    padding-bottom: 1.2rem;
+
+    &::after {
+      @include u.bottom(0);
+      content: '';
+      width: 150%;
+      height: 2px;
+      background: u.color(other, border);
+    }
+
+    ul {
+      @include u.flex(flex);
+      gap: 1.8rem;
+
+      .header__link {
+        position: relative;
+        z-index: 3;
+        padding-bottom: 0.5rem;
+        font-size: calc(size(lg) - 0.07rem);
+        font-weight: semibold;
+        transition: 0.2s ease;
+
+        &::after {
+          @include u.bottom(-1rem);
+          content: '';
+          width: 100%;
+          height: 2px;
+          border-radius: 50rem;
+          background-color: u.color(primary, white);
+          opacity: 0;
+          z-index: -1;
+          transition: 0.2s ease;
+        }
+
+        &--active {
+          color: u.color(primary, white);
+
+          &::after {
+            opacity: 1;
+          }
+        }
+      }
+    }
+
+    .users-related {
+      @include u.usersRelated;
+    }
+  }
+}

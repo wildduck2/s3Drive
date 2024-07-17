@@ -1,0 +1,52 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../../base' as *;
+@use '../../../utils' as u;
+
+/*
+
+    Notion Minimal Text Editor Toolbar Pick
+
+*/
+
+.notion__editor__link__manager__trigger {
+  @include u.buttonToolTip();
+}
+
+.notion__editor__link__manager__content {
+  &__footer {
+    @include u.flex(grid, center);
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+}
+
+.tiptap {
+  :first-child {
+    margin-top: 0;
+  }
+
+  /* Code and preformatted text styles */
+  code {
+    background-color: hsl(var(--input));
+    border-radius: 0.4rem;
+    color: var(--black);
+    font-size: 0.85rem;
+    padding: 0.25em 0.3em;
+  }
+
+  /* Link styles */
+  a {
+    color: hsl(var(--forground));
+    border-bottom: 1px solid;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+}

@@ -1,0 +1,193 @@
+/*ator This code is writen by Ahmed Ayob */
+@use './functions' as f;
+@use './colors' as c;
+
+/* Mixins */
+@mixin flex($display,
+  $alignItems: initial,
+  $justifyContent: initial,
+  $alignContent: initial,
+  $justifyItems: initial,
+  $felxDirection: initial) {
+  display: $display;
+  align-items: $alignItems;
+  justify-content: $justifyContent;
+  flex-direction: $felxDirection;
+}
+
+@mixin position {
+  position: absolute;
+  top: 50%; // left: 50%; transform: translate(-50%, -50%); } @mixin center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+}
+
+@mixin bottom($bottom: 1rem) {
+  position: absolute;
+  bottom: $bottom;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@mixin top($top: 1rem) {
+  position: absolute;
+  top: $top;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+@mixin right($right: 1rem) {
+  position: absolute;
+  right: $right;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+@mixin left($left: 1rem) {
+  position: absolute;
+  left: $left;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/*
+
+Container mixin
+
+*/
+
+@mixin container {
+  width: 100%;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 2rem
+    /* 32px */
+  ;
+  padding-left: 2rem
+    /* 32px */
+  ;
+
+  @media (min-width: 1400px) {
+    max-width: 1400px;
+  }
+}
+
+@mixin section {
+  padding-inline: 1.3rem;
+  padding-block: 1.3rem;
+}
+
+@mixin mainSection {
+  padding: 2rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+
+profile_img
+
+*/
+
+@mixin profile_img($w: 2.5rem, $h: 2.5rem) {
+  display: inline-block;
+  position: relative;
+  object-fit: cover;
+  width: $w;
+  height: $h;
+  border-radius: 50%;
+  margin-left: -0.8rem;
+  border: 2px solid f.color(black, 500);
+}
+
+@mixin usersRelated {
+  @include flex(flex, center);
+  gap: 1rem;
+
+  &>div {
+    @include flex(flex);
+
+    &>img {
+      @include profile_img;
+    }
+
+    &>button {
+      @include flex(flex, center, center);
+      place-content: center;
+      @include profile_img;
+      font-weight: bold;
+      color: f.color(primary, white-80);
+      background: f.color(other, border);
+      transition: 0.2s ease;
+    }
+  }
+
+  &>.sperator {
+    height: 40px;
+    width: 2px;
+  }
+
+  &>button {
+    @include flex(flex, center, center);
+    @include profile_img;
+    margin-left: 0;
+    background: f.color(black, 700);
+    font-size: size(lg);
+    font-weight: semibold;
+    color: f.color(primary, white-80);
+    transition: 0.2s ease;
+
+    &:hover {
+      background: f.color(other, border);
+    }
+
+    &>svg {
+      display: inline-flex;
+      margin-bottom: 0.2rem;
+    }
+  }
+}
+
+@mixin buttonToolTip {
+  width: 1.85rem;
+  height: 1.85rem;
+  padding: 0;
+
+  svg {
+    width: 55%;
+    width: 1.1rem !important;
+    height: 1.1rem !important;
+  }
+}
+
+@mixin ghostButton {
+  --tw-ring-offset-color: hsl(var(--background));
+  @include flex(flex, center, space-around);
+  white-space: nowrap;
+  border-radius: calc(var(--radius) - 2px);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+
+  & :focus-visible {
+    --tw-ring-color: hsl(var(--ring));
+    --tw-ring-offset-width: 2px;
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  &:hover {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+  }
+}

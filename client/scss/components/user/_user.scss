@@ -1,0 +1,28 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../base' as *;
+@use '../../utils' as u;
+
+/*
+
+   User 
+
+*/
+
+.user {
+  @include u.flex(flex, center);
+  gap: 0.5rem;
+
+  & > span {
+    width: 30px;
+    height: 30px;
+
+    & > span {
+      font-size: size(lg);
+    }
+  }
+}

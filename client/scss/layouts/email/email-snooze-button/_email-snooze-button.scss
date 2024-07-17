@@ -1,0 +1,81 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../../base' as *;
+@use '../../../utils' as u;
+
+/*
+
+    Email side List 
+
+*/
+
+.email__snooze__button {
+  svg {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
+
+.email__snooze__content {
+  @include u.flex(flex);
+  width: 561px;
+  padding: 0;
+
+  &__left {
+    @include u.flex(flex);
+    flex-direction: column;
+
+    gap: 0.5rem;
+    border-right-width: 1px;
+    padding-inline: 0.5rem;
+    padding-block: 1rem;
+
+    &>h4 {
+      padding-inline: 1rem;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      font-weight: 500;
+    }
+
+    &>div {
+      @include u.flex(grid);
+      min-width: 250px;
+      gap: 0.25rem;
+
+      &>button {
+        justify-content: flex-start;
+        font-weight: 400;
+
+        &>span {
+          margin-left: auto;
+          color: hsl(var(--muted-foreground));
+        }
+      }
+    }
+  }
+
+  .email__snooze__content__right {
+    padding: 0.5rem;
+
+    &__calendar {
+      border-radius: calc(var(--radius) - 2px);
+      border-width: 1px;
+    }
+  }
+}

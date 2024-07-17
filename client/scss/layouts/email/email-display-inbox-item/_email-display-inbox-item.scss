@@ -1,0 +1,55 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../../base' as *;
+@use '../../../utils' as u;
+
+/*
+
+    Email Display Inbox Item
+
+*/
+
+.email__display__inbox__item {
+  width: 100%;
+  border: 1px solid hsl(var(--border));
+  padding: 0.75rem;
+  border-radius: var(--radius);
+
+  &__trigger {
+    @include u.flex(flex, flex-end, space-between);
+
+    &>div:first-child {
+      @include u.flex(grid);
+      gap: 0.5rem;
+
+      &>div:first-child {
+        font-weight: 600;
+        width: fit-content;
+      }
+
+      &>div:last-child {
+        font-size: 0.75rem;
+        line-height: 1rem;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+      }
+    }
+
+    &>div:last-child {
+      .sperator {
+        margin-block: 0.5rem;
+      }
+
+      color: hsl(var(--muted-foreground));
+      margin-left: auto;
+      font-size: 0.75rem;
+      line-height: 1rem;
+    }
+  }
+}

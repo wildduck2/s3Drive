@@ -1,0 +1,149 @@
+/*
+                    (
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../../../base' as *;
+@use '../../../../utils' as u;
+
+/*
+
+    Main Erea Kanban Column task
+    
+*/
+
+.file-mainerea__body__kanban__colmun__task__list {
+  @include u.flex(grid, center);
+  background: u.color(black, 100);
+  gap: 0.5rem;
+
+  &__item {
+    @include u.flex(grid, center);
+    border: 1px solid transparent;
+    gap: 0.9rem;
+    border-radius: 0.5rem;
+    background: hsl(var(--accent));
+    padding: 1.2rem;
+    overflow: hidden;
+
+    &__header {
+      @include u.flex(flex, center, space-between);
+
+      & > div {
+        @include u.flex(flex, center);
+        gap: 0.5rem;
+
+        & > div {
+          padding: 0.4rem 0.9rem;
+          font-size: calc(size(na) - 0.1rem);
+          transition: all 0.3s ease-in-out;
+
+          &.blue {
+            background: u.color(blue, 100);
+          }
+
+          &.red {
+            background: u.color(red, 400);
+          }
+
+          &.yellow {
+            background: u.color(other, yellow);
+          }
+
+          &.mophe {
+            background: u.color(other, mophe);
+          }
+        }
+      }
+
+      & > svg {
+        margin-right: -0.4rem;
+      }
+    }
+
+    &__info {
+      @include u.flex(flex, flex-start);
+      flex-direction: column;
+      gap: 0.2rem;
+
+      & > h5 {
+        font-size: calc(size(2xl) - 0.05rem);
+        font-weight: 500;
+        color: u.color(primary, white-80);
+      }
+
+      & > p {
+        color: u.color(black, 200);
+        opacity: 0.6;
+        font-size: calc(size(na) - 0.03rem);
+      }
+    }
+
+    &__subtasks {
+      @include u.flex(grid, center);
+      gap: 0.5rem;
+
+      & > h5 {
+        font-size: calc(size(na));
+        font-weight: 500;
+        color: u.color(primary, white-80);
+      }
+
+      & > li {
+        @include u.flex(flex, center);
+        gap: 0.2rem;
+
+        & > button {
+          @include u.flex(flex, center, center);
+          width: 1.2rem;
+          height: 1.2rem;
+          border-radius: 5rem;
+          border: 1px solid u.color(black, 300) !important;
+          scale: 0.9;
+          padding: 0.2rem;
+
+          &.data-\[state\=checked\]\:text-primary-foreground[data-state='checked'] {
+            border-color: transparent !important;
+          }
+        }
+
+        & > label {
+          font-size: calc(size(lg) - 0.19rem);
+          font-weight: 500;
+          line-height: 1.5;
+
+          &:disabled {
+            cursor: not-allowed;
+            opacity: 0.75;
+          }
+        }
+      }
+
+      & > .separator {
+        background: u.color(black, 300) !important;
+        margin-block: 0.5rem;
+        height: 2px;
+      }
+    }
+
+    &__footer {
+      position: relative;
+      @include u.usersRelated;
+      @include u.flex(flex, center, space-between);
+      margin-left: 0.8rem;
+
+      & > div:first-child {
+        button {
+          background: u.color(black, 400);
+        }
+      }
+
+      & > div:last-child {
+        @include u.flex(flex, center);
+        gap: 0.7rem;
+      }
+    }
+  }
+}

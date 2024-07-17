@@ -1,0 +1,27 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../base' as *;
+@use '../../utils' as u;
+
+/*
+
+    Sign in 
+    
+*/
+
+.auth__form {
+  & > form {
+    & > div {
+      & > button {
+        &.forget__password {
+          place-self: flex-end;
+          margin-block: -0.5rem 0.5rem;
+        }
+      }
+    }
+  }
+}

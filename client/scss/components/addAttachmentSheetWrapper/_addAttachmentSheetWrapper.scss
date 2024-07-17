@@ -1,0 +1,60 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../base' as *;
+@use '../../utils' as u;
+
+/*
+
+    AddAttachmentSheetWrapper 
+
+*/
+
+.add-attachment {
+  &__header {
+    &__trigger {
+      position: relative;
+      @include u.flex(grid, center, center);
+      place-content: center;
+      width: 100%;
+      height: 250px;
+      border-radius: calc(var(--radius) - 2px);
+      border-width: 1px;
+      border-style: dashed;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
+      transition: background 0.1s ease-in-out;
+
+      &:has(input.active, input:hover) {
+        background: hsl(var(--muted) / 0.1);
+      }
+
+      & > div {
+        @include u.flex(grid);
+        place-content: center;
+        gap: 1rem;
+
+        & > svg {
+          place-self: center;
+        }
+      }
+
+      & > input {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+      }
+    }
+  }
+
+  &__body {
+    overflow-y: auto;
+    height: 370px;
+    margin-top: 2rem;
+    border-radius: calc(var(--radius) - 2px);
+  }
+}

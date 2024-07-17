@@ -1,0 +1,101 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../../base' as *;
+@use '../../../utils' as u;
+
+/*
+
+    Turn Into Picker
+    
+*/
+
+.turn__into__picker__trigger {
+  font-size: 0.77rem;
+  width: 140px;
+  text-align: start;
+  white-space: nowrap;
+  padding: 0.9rem;
+  height: 30px;
+}
+
+.turn__into__picker__content {
+  @include u.flex(grid, center);
+  background: hsl(var(--background));
+  padding: 0.5rem;
+  border: 1px solid hsl(var(--input));
+  border-radius: 0.5rem;
+  font-size: 0.7rem;
+  margin-top: 0.5rem;
+
+  &* {
+    font-size: 14px;
+  }
+
+  & > span {
+    padding-left: 0.5rem;
+    padding-bottom: 0.1rem;
+    font-size: 12px;
+    color: hsl(var(--input));
+  }
+
+  &__button {
+    position: relative;
+    @include u.flex(flex, space-between);
+    gap: 0.5rem;
+    background: none;
+    padding: 0 0.5rem;
+    height: 28px;
+    width: 100%;
+    border-radius: 0.2rem;
+
+    img {
+      width: 22px;
+      height: 22px;
+      background: hsl(var(--foreground));
+    }
+
+    span {
+      font-size: 12px;
+    }
+
+    &__hover__menu {
+      --width: 150px;
+      @include u.flex(grid);
+      align-items: flex-start;
+      position: absolute;
+      right: -70%;
+      background: hsl(var(--background));
+      border: 1px solid hsl(var(--input));
+      border-radius: 0.5rem;
+      padding: 0.55rem;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 2;
+
+      & > img {
+        width: calc(var(--width) * 1);
+        height: calc(var(--width) * 0.65);
+        border-radius: 0.5rem;
+        object-fit: cover;
+        margin-bottom: 0.5rem;
+      }
+
+      & > span {
+        text-align: start;
+        text-wrap: wrap;
+        width: var(--width);
+        text-transform: capitalize;
+      }
+    }
+
+    &:hover {
+      .turn__into__picker__content__button__hover__menu {
+        opacity: 1;
+      }
+    }
+  }
+}

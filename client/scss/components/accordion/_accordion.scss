@@ -1,0 +1,48 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../base' as *;
+@use '../../utils' as u;
+
+/*
+
+    Accordion
+    
+*/
+
+.files-tree__accordion {
+  @include u.flex(grid);
+  gap: 0.5rem;
+
+  &__title {
+    @include u.flex(flex, center);
+    gap: 0.5rem;
+    font-size: size(na);
+    text-transform: capitalize;
+
+    svg {
+      font-size: size(2xl);
+    }
+  }
+
+  &__list {
+    @include u.flex(grid);
+    gap: 0.5rem;
+    background-color: red;
+    transition: 0.3s ease;
+  }
+
+  &__item {
+    padding-inline-start: 0.1rem;
+
+    &__title {
+      @include u.flex(flex, center);
+      font-size: size(na);
+      gap: 0.5rem;
+      text-transform: capitalize;
+    }
+  }
+}

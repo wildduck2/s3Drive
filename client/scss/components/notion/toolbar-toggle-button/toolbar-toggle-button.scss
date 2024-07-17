@@ -1,0 +1,18 @@
+/*
+
+    This code is writen by Ahmed Ayob
+
+*/
+
+@use '../../../base' as *;
+@use '../../../utils' as u;
+
+/*
+
+    Toolbar Toggle Button  
+    
+*/
+.toolbar__toggle__buttons {
+  @include u.flex(flex, center);
+  gap: 0.3rem;
+}
