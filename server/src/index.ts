@@ -24,6 +24,13 @@ app.use(
 
 app.use(blobRoutes)
 
+prisma.user.create({
+  data: {
+    email: 'wildudck@email.com',
+    password: 'wilduckpassowrd',
+    user_name: 'wildduck'
+  }
+})
 app.listen(config.port, () =>
   console.log(`server is running on port: ${config.port}`)
 )

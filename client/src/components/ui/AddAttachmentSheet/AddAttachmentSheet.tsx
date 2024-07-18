@@ -5,6 +5,8 @@ import axios from 'axios'
 import { Icon } from '@/assets'
 import * as React from 'react'
 import { on } from 'events'
+import { toast } from 'sonner'
+import { StoreFile } from '@/utils'
 
 export type AttachmentType = {
   id: string
@@ -39,15 +41,15 @@ export const AddAttachmentSheetWrapper = () => {
     const file = e.currentTarget.files![0]
     try {
       //NOTE: check for the un acceptable file types
-      if (file && !supportedFileTypes.includes(file.type)) {
-        throw 'File is supported:'
-      }
+      if (file && !supportedFileTypes.includes(file.type)) return toast.error('File is supported:')
+
+      if (file && file.size > 10 * 1024 * 1024) return toast.error('File has exceeded the max size')
 
       const filedata: AttachmentType = {
         id: ID(),
         file: file,
-        name: file.name.split('/')[0],
-        type: file.type.split('/'),
+        name: file.name,
+        type: file.type,
         size: `${file.size}`,
         progress: 0,
         status: 'pending',
@@ -55,42 +57,13 @@ export const AddAttachmentSheetWrapper = () => {
 
       setUploadedFiles((uploadedFiles) => [...uploadedFiles, filedata])
 
-      async function StoreFile(filedata: AttachmentType) {
-        const base64File = await convertToBase64(filedata.file)
-        try {
-          //NOTE: make the req
-          const { data } = await axios.put(
-            `http://localhost:3000/v1/blobs`,
-            {
-              id: filedata.id,
-              name: filedata.name,
-              size: filedata.size,
-              type: filedata.type,
-              data: base64File,
-            },
-            {
-              headers: {
-                Authorization: `Bearer your-secret-token`,
-                // 'Content-Type': 'multipart/form-data',
-                // 'Content-Type': 'application/json',
-              },
-            },
-          )
+      const data = await StoreFile(filedata)
+      if (!data) return toast.error('failed to uplaod the file')
 
-          if (!data) return null
-
-          return data
-        } catch (error) {
-          console.log('failed to upload the file')
-          //NOTE: make toast
-          return null
-        }
-      }
-      StoreFile(filedata)
-
+      toast.success('filed uploaded successfully')
       return filedata
     } catch (error) {
-      console.log(error)
+      toast.error('failed to upload the file')
     }
   }
 
@@ -160,21 +133,4 @@ export const AddAttachmentSheetWrapper = () => {
       </div>
     </>
   )
-}
-
-export const computeSHA256 = async (file: File) => {
-  const buffer = await file.arrayBuffer()
-  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer)
-  const hashArray = Array.from(new Uint8Array(hashBuffer))
-  const hasHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
-  return hasHex
-}
-
-const convertToBase64 = (file: File) => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve(reader.result.split(',')[1])
-    reader.onerror = (error) => reject(error)
-  })
 }

@@ -25,9 +25,12 @@ export class S3Service {
         }
       })
       if (!res) return null
+      console.log(URL)
 
       return id + name
     } catch (error) {
+      console.log(error)
+
       return null
     }
   }

@@ -1,10 +1,11 @@
 // src/controllers/blobController.ts
 
 import { Request, Response } from 'express'
-import { AdapterService, S3Service } from '../../services'
+import { AdapterService, DBService, S3Service } from '../../services'
 import { StoreBlobBodyType } from './blobController.types'
 import { Base64Utils, S3 } from '../../utils'
 import { prisma } from '../..'
+import { uuidv7 } from 'uuidv7'
 
 class BlobController {
   private storageService: AdapterService
@@ -16,12 +17,14 @@ class BlobController {
   async storeBlob(req: Request, res: Response) {
     const { id, name, size, type, data } = req.body as StoreBlobBodyType
 
-    const Base64Data = data
+    let Base64Data = data
     try {
+      //NOTE: checking if the file is base64 if not formate it
       if (!Base64Utils.isBase64(Base64Data)) {
         Base64Data = Base64Utils.encode(Base64Data)
       }
 
+      //NOTE: uplaoding the file to the s3
       const s3blob = await S3Service.saveBlob({
         id,
         name,
@@ -29,20 +32,24 @@ class BlobController {
         type,
         data: Base64Data
       })
+      if (!s3blob) return res.status(401).json('failed to uplaod the file')
 
-      // Save metadata to the database
-      const data = await this.storageService.adapter.saveBlob({
-        id,
+      //NOTE: Save metadata to the database
+      const data = await DBService.saveBlobMetaData({
+        user_id: 'a6f9914c-33ba-4788-aa18-12e658567c8d',
+        type,
         name,
-        size,
-        data: Base64Data
+        blob_url: '',
+        size: size!
       })
-      //
-      // if (!data) return res.status(400).send({ error: 'Invalid Base64 data' })
+      if (!data)
+        return res
+          .status(400)
+          .send({ error: 'failed to store file data into the db' })
 
       res
-        .status(201)
-        .send({ error: null, URL, message: 'Blob stored successfully' })
+        .status(200)
+        .send({ error: null, data: '', message: 'Blob stored successfully' })
     } catch (error) {
       console.log(error)
 

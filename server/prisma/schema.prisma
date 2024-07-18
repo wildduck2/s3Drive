@@ -21,7 +21,7 @@ model User {
     verified_email Boolean?
     createdAt      DateTime   @default(now())
     DriverLog      DriverLog?
-    Blobs          Blobs?
+    Blobs          Blobs[]
     Session        Session?
     Otp            Otp?
 
@@ -31,14 +31,17 @@ model User {
 model Blobs {
     id        String   @id @unique @default(uuid()) @db.Char(36)
     size      String
-    user_id   String   @unique
-    blob_id   String   @unique
+    type      String
+    name      String
+    user_id   String   
+    blob_url  String
     createdAt DateTime @default(now())
 
-    User User @relation(fields: [user_id], references: [id])
-    Blob Blob @relation(fields: [blob_id], references: [id])
+    User   User    @relation(fields: [user_id], references: [id])
+    blobId String? @db.Char(36)
+    Blob   Blob?   @relation(fields: [blobId], references: [id])
 
-    @@index([id, user_id, blob_id], map: "blobs")
+    @@index([id, user_id], map: "blobs")
 }
 
 model Blob {
@@ -53,7 +56,7 @@ model Blob {
 
 model DriverLog {
     id        String   @id @unique @default(uuid()) @db.Char(36)
-    data_id   String   @unique
+    data_id   String
     user_id   String   @unique
     createdAt DateTime @default(now())
 
