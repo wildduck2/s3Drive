@@ -1,21 +1,10 @@
 import { filesize } from 'filesize'
 import { uuidv7 as ID } from 'uuidv7'
-import {
-  Button,
-  ContextMenu,
-  ContextMenuTrigger,
-  Input,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui'
-import axios, { AxiosResponse } from 'axios'
+import { Button, ContextMenu, ContextMenuTrigger, Input, Progress } from '@/components/ui'
+import axios from 'axios'
 import { Icon } from '@/assets'
 import * as React from 'react'
-import { Inbox } from 'lucide-react'
+import { on } from 'events'
 
 export type AttachmentType = {
   id: string
@@ -33,28 +22,71 @@ interface Data {
   token: string
   path: string
 }
-
+const supportedFileTypes = [
+  'image/jpeg',
+  'image/png',
+  'image/svg+xml',
+  'application/zip',
+  'video/mp4',
+  'video/webm',
+  'video/ogg',
+]
 export const AddAttachmentSheetWrapper = () => {
   const [uploadedFiles, setUploadedFiles] = React.useState<AttachmentType[]>([])
   const [data, setData] = React.useState<Data | null>(null)
-  console.log(uploadedFiles, 'sdklfjsdlf')
 
   const getFileDataHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.currentTarget.files![0]
-
     try {
+      //NOTE: check for the un acceptable file types
+      if (file && !supportedFileTypes.includes(file.type)) {
+        throw 'File is supported:'
+      }
+
       const filedata: AttachmentType = {
         id: ID(),
         file: file,
         name: file.name.split('/')[0],
-        type: file.type.split('/')[1],
-        size: `${file.size / 1024}`,
+        type: file.type.split('/'),
+        size: `${file.size}`,
         progress: 0,
         status: 'pending',
       }
 
-      // generate signed url the file and use axios to upload
       setUploadedFiles((uploadedFiles) => [...uploadedFiles, filedata])
+
+      async function StoreFile(filedata: AttachmentType) {
+        const base64File = await convertToBase64(filedata.file)
+        try {
+          //NOTE: make the req
+          const { data } = await axios.put(
+            `http://localhost:3000/v1/blobs`,
+            {
+              id: filedata.id,
+              name: filedata.name,
+              size: filedata.size,
+              type: filedata.type,
+              data: base64File,
+            },
+            {
+              headers: {
+                Authorization: `Bearer your-secret-token`,
+                // 'Content-Type': 'multipart/form-data',
+                // 'Content-Type': 'application/json',
+              },
+            },
+          )
+
+          if (!data) return null
+
+          return data
+        } catch (error) {
+          console.log('failed to upload the file')
+          //NOTE: make toast
+          return null
+        }
+      }
+      StoreFile(filedata)
 
       return filedata
     } catch (error) {
@@ -75,116 +107,74 @@ export const AddAttachmentSheetWrapper = () => {
               <Input
                 placeholder="Filter emails..."
                 type="file"
+                accept={supportedFileTypes.join('')}
                 onChange={getFileDataHandler}
               />
             </ContextMenuTrigger>
           </ContextMenu>
+          <p className="mt-2 text-muted-foreground text-[.9rem]"> Only support .jpg, .png and .svg and zip files</p>
         </div>
 
-        <div className="add-attachment__body w-[484px]">
-          <Table>
-            <TableHeader>
-              <TableRow className=" items-center">
-                <TableHead className="w-[20px] pr-0">Delete</TableHead>
-                <TableHead className="w-[100px]">Name</TableHead>
-                <TableHead className="w-[100px]">Type</TableHead>
-                <TableHead className="w-[92px]">Size</TableHead>
-                <TableHead className="w-[100px] text-left">Progress</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {uploadedFiles.map((invoice, idx) => {
-                console.log(filesize(parseInt(invoice.size), { round: 2 }))
-
-                return (
-                  <TableRow key={invoice.id}>
-                    <TableCell className="font-medium w-[20px] pr-0">
-                      <Button
-                        variant="ghost"
-                        className="p-0 "
-                        onClick={() => {
-                          setUploadedFiles((uploadedFiles) => uploadedFiles.filter((item) => item.id !== invoice.id))
-                        }}
-                      >
-                        <Icon.trash2 className="size-[20px]" />
-                      </Button>
-                    </TableCell>
-                    <TableCell className="font-medium">
-                      <span className="inline-block font-medium truncate w-[100px] max-w-[66px]">{invoice.name}</span>
-                    </TableCell>
-                    <TableCell className="truncate w-[100px]"> {invoice.type.split('/')[0]}</TableCell>
-                    <TableCell className="truncate w-[92px] max-w-[92]">
-                      {filesize(+invoice.size * 1000, { round: 0 })}
-                    </TableCell>
-                    <TableCell className="w-[100px]">
-                      {invoice.status}
-                      {/* <Progress value={invoice.progress} className="w-[90%] h-[4px]" /> */}
-                    </TableCell>
-                  </TableRow>
-                )
-              })}
-            </TableBody>
-          </Table>
-        </div>
-        <button onClick={() => uploadAllFilesHandler(uploadedFiles, data, uploadedFiles, setUploadedFiles)}>
-          Upload
-        </button>
+        <ul className="add-attachment__body w-[484px] flex flex-col gap-2">
+          {uploadedFiles.map((invoice) => {
+            return (
+              <li
+                key={invoice.id}
+                className="grid gap-2 p-2 border border-border  border-solid rounded-md h-fit items-start"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="relative">
+                      <span className="absolute top-1/2 left-1/2 translate-x-[-60%] translate-y-[-50%] text-white font-semibold">
+                        {invoice.type}
+                      </span>
+                      <Icon.iconBackground className="size-[50px]" />
+                    </div>
+                    <div className="grid items-start">
+                      <h3 className="inline-block font-medium text-[.97rem] truncate w-[300px]">
+                        <span className="">{invoice.name}</span>
+                      </h3>
+                      <p className="truncate w-[92px] max-w-[92]">{filesize(+invoice.size, { round: 0 })}</p>
+                    </div>
+                  </div>
+                  <div className="font-medium pr-0">
+                    <Button
+                      variant="ghost"
+                      className="p-0 w-[1.8rem] h-[1.8rem]"
+                      onClick={() => {
+                        setUploadedFiles((uploadedFiles) => uploadedFiles.filter((item) => item.id !== invoice.id))
+                      }}
+                    >
+                      <Icon.X className="size-[20px]" />
+                    </Button>
+                  </div>
+                </div>
+                <Progress
+                  value={80}
+                  className="h-1"
+                />
+              </li>
+            )
+          })}
+        </ul>
       </div>
     </>
   )
 }
-export const uploadAllFilesHandler = async (
-  files: AttachmentType[],
-  data: Data,
-  uploadedFiles: AttachmentType[],
-  setUploadedFiles: (files: AttachmentType[]) => void,
-): Promise<AxiosResponse[] | []> => {
-  // Use Promise.all to wait for all asynchronous operations to complete
-  const uploadFilesRecursively = async (files: AttachmentType[], index: number): Promise<AxiosResponse[] | []> => {
-    if (files.length === 0) {
-      return []
-    }
 
-    const [firstFile, ...remainingFiles] = files
-    const manga = [...uploadedFiles]
+export const computeSHA256 = async (file: File) => {
+  const buffer = await file.arrayBuffer()
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hasHex = hashArray.map((b) => b.toString(16).padStart(2, '0')).join('')
+  return hasHex
+}
 
-    try {
-      const res = await axios({
-        method: 'put',
-        url: firstFile.url,
-        data: firstFile.file,
-        headers: {
-          apikey: data.token,
-          authorization: `Bearer ${data.token}`,
-        },
-        onUploadProgress: (progressEvent) => {
-          const newState = { ...uploadedFiles[index] }
-          const { loaded, total } = progressEvent
-          const percent = Math.floor((loaded * 100) / total!)
-
-          firstFile.progress = percent
-
-          if (percent === 100) {
-            newState.status = 'Success'
-            console.log('success')
-          } else {
-            newState.status = 'Uploading'
-            console.log('uploading')
-          }
-
-          manga[index] = newState
-          setUploadedFiles(manga)
-          console.log(percent, firstFile.id)
-        },
-      })
-
-      // If one of the requests is bad, the cycle will stop
-      return [res, ...(await uploadFilesRecursively(remainingFiles, index + 1))]
-    } catch (error) {
-      console.error(error)
-      return []
-    }
-  }
-
-  return await uploadFilesRecursively(files, 0)
+const convertToBase64 = (file: File) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result.split(',')[1])
+    reader.onerror = (error) => reject(error)
+  })
 }
