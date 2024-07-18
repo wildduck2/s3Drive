@@ -13,24 +13,73 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+model User {
+    id             String     @id @default(uuid()) @db.Char(36)
+    user_name      String     @unique
+    email          String     @unique
+    password       String
+    verified_email Boolean?
+    createdAt      DateTime   @default(now())
+    DriverLog      DriverLog?
+    Blobs          Blobs?
+    Session        Session?
+    Otp            Otp?
+
+    @@index([user_name, email], map: "user")
+}
+
+model Blobs {
+    id        String   @id @unique @default(uuid()) @db.Char(36)
+    size      String
+    user_id   String   @unique
+    blob_id   String   @unique
+    createdAt DateTime @default(now())
+
+    User User @relation(fields: [user_id], references: [id])
+    Blob Blob @relation(fields: [blob_id], references: [id])
+
+    @@index([id, user_id, blob_id], map: "blobs")
+}
+
 model Blob {
-    id        String      @id @default(uuid()) @db.Char(36)
-    data      String      @map("blob_data")
-    size      Int
+    id        String      @id @unique @default(uuid()) @db.Char(36)
+    data      Bytes
     createdAt DateTime    @default(now())
     DriverLog DriverLog[]
+    Blobs     Blobs[]
 
-    @@index([id])
-    @@map("blobs")
+    @@index([id], map: "blob")
 }
 
 model DriverLog {
-    id        String   @id @default(uuid()) @db.Char(36)
+    id        String   @id @unique @default(uuid()) @db.Char(36)
+    data_id   String   @unique
+    user_id   String   @unique
     createdAt DateTime @default(now())
-    dataId    String   @map("data_id")
 
-    Blob Blob @relation(fields: [dataId], references: [id])
+    User User @relation(fields: [user_id], references: [id])
+    Blob Blob @relation(fields: [data_id], references: [id])
 
-    @@index([id, dataId])
-    @@map("driver_log")
+    @@index([id, data_id], map: "driver_log")
+}
+
+model Session {
+    id         String   @id @unique @default(uuid()) @db.Char(36)
+    sid        String   @unique
+    user_id    String?  @unique
+    user       User?    @relation(fields: [user_id], references: [id])
+    data       Json     @db.Json
+    created_at DateTime @default(now())
+    expiresAt  DateTime @db.Timestamp(6)
+
+    @@index([expiresAt], map: "IDX_session_expire")
+}
+
+model Otp {
+    id         String   @id @unique @default(uuid()) @db.Char(36)
+    user_id    String   @unique
+    otp        String
+    created_at DateTime @default(now())
+    expires_at DateTime
+    user       User?    @relation(fields: [user_id], references: [id])
 }
