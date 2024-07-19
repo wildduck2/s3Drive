@@ -7,6 +7,7 @@ import * as React from 'react'
 import { on } from 'events'
 import { toast } from 'sonner'
 import { StoreFile } from '@/utils'
+import { useEffect } from 'react'
 
 export type AttachmentType = {
   id: string
@@ -50,7 +51,7 @@ export const AddAttachmentSheetWrapper = () => {
         file: file,
         name: file.name,
         type: file.type,
-        size: `${file.size}`,
+        size: file.size.toString(),
         progress: 0,
         status: 'pending',
       }
@@ -66,6 +67,39 @@ export const AddAttachmentSheetWrapper = () => {
       toast.error('failed to upload the file')
     }
   }
+
+  useEffect(() => {
+    const ws = new WebSocket('ws://localhost:8080')
+
+    ws.onopen = () => {
+      console.log('Connected to WebSocket server')
+    }
+
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data)
+
+        if (data.progress !== undefined) {
+          // setProgress(data.progress)
+          console.log('Progress:', data)
+        }
+      } catch (e) {
+        console.error('Error parsing message:', e)
+      }
+    }
+
+    ws.onerror = (event) => {
+      console.error('WebSocket error:', event)
+    }
+
+    ws.onclose = (event) => {
+      console.log('Disconnected from WebSocket server')
+    }
+
+    return () => {
+      ws.close()
+    }
+  }, [])
 
   return (
     <>
@@ -99,7 +133,7 @@ export const AddAttachmentSheetWrapper = () => {
                   <div className="flex items-center gap-4">
                     <div className="relative">
                       <span className="absolute top-1/2 left-1/2 translate-x-[-60%] translate-y-[-50%] text-white font-semibold">
-                        {invoice.type}
+                        {invoice.type.split('/')[1]}
                       </span>
                       <Icon.iconBackground className="size-[50px]" />
                     </div>

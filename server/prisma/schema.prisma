@@ -33,7 +33,7 @@ model Blobs {
     size      String
     type      String
     name      String
-    user_id   String   
+    user_id   String
     blob_url  String
     createdAt DateTime @default(now())
 

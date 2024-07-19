@@ -14,4 +14,8 @@ router.get('/v1/blobs/:id', authMiddleware, (req, res) =>
   blobController.retrieveBlob(req, res)
 )
 
+router.get('/v1/blobs', authMiddleware, (req, res) =>
+  blobController.listBucketBlobs(req, res)
+)
+
 export { router as blobRoutes }
