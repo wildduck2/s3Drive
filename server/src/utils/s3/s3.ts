@@ -1,38 +1,106 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3'
-import { config } from '../../config'
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { GetSignedUrlType } from './s3.types'
+import crypto from 'crypto'
+import { RequestOptions } from './s3.types'
 
-export const s3Client = new S3Client({
-  forcePathStyle: true,
-  region: config.s3.region,
-  endpoint: config.s3.endPoint,
-  credentials: {
-    accessKeyId: config.s3.accessKey,
-    secretAccessKey: config.s3.secretAccessKey
-  }
-})
+/**
+ * A class for interacting with AWS S3 using Signature Version 4 (SigV4) for signing requests.
+ */
 export class S3 {
-  static async getSignedURl({
-    id,
-    name,
-    type
-  }: GetSignedUrlType): Promise<string | null> {
-    const putObjectCommand = new PutObjectCommand({
-      Bucket: config.s3.bucket,
-      Key: id + name,
-      ContentType: type
-    })
+  /**
+   * Generates a signed URL for making authenticated requests to AWS S3.
+   *
+   * @param request - The request options including method, URL, headers, and data.
+   * @param credentials - AWS credentials including access key, secret access key, and region.
+   * @returns A promise that resolves to the signed URL if successful, or null if an error occurs.
+   */
+  static async getSignedURL(
+    request: RequestOptions,
+    { accessKey, secretAccessKey, region }
+  ) {
+    const { method, url, headers, data } = request
 
-    try {
-      const signedUrl = await getSignedUrl(s3Client, putObjectCommand, {
-        expiresIn: 60
-      })
-      if (!signedUrl) return null
+    // Generate AWS date and date stamp
+    const amzDate = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '')
+    const dateStamp = amzDate.substring(0, 8)
 
-      return signedUrl
-    } catch (error) {
-      return null
-    }
+    // Update headers with AWS-specific headers
+    headers['x-amz-date'] = amzDate
+    headers['x-amz-content-sha256'] = crypto
+      .createHash('sha256')
+      .update(data || '')
+      .digest('hex')
+
+    // Construct canonical headers and request
+    const canonicalHeaders = Object.keys(headers)
+      .sort()
+      .map((key) => `${key.toLowerCase()}:${headers[key]}`)
+      .join('\n')
+
+    const signedHeaders = Object.keys(headers)
+      .sort()
+      .map((key) => key.toLowerCase())
+      .join(';')
+
+    const canonicalRequest = [
+      method,
+      new URL(url).pathname,
+      new URL(url).search,
+      canonicalHeaders + '\n',
+      signedHeaders,
+      headers['x-amz-content-sha256']
+    ].join('\n')
+
+    // Generate string to sign
+    const algorithm = 'AWS4-HMAC-SHA256'
+    const credentialScope = `${dateStamp}/${region}/s3/aws4_request`
+    const stringToSign = [
+      algorithm,
+      amzDate,
+      credentialScope,
+      crypto.createHash('sha256').update(canonicalRequest).digest('hex')
+    ].join('\n')
+
+    // Generate signing key and signature
+    const signingKey = this.getSignatureKey(
+      secretAccessKey,
+      dateStamp,
+      region,
+      's3'
+    )
+    const signature = crypto
+      .createHmac('sha256', signingKey)
+      .update(stringToSign)
+      .digest('hex')
+
+    // Set the Authorization header
+    headers['Authorization'] =
+      `${algorithm} Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`
+  }
+
+  /**
+   * Generates the HMAC-SHA256 signing key for AWS Signature Version 4.
+   *
+   * @param key - The AWS secret access key.
+   * @param date - The date stamp in `YYYYMMDD` format.
+   * @param region - The AWS region.
+   * @param service - The AWS service name (e.g., 's3').
+   * @returns The HMAC-SHA256 signing key as a Buffer.
+   */
+  static getSignatureKey(
+    key: string,
+    date: string,
+    region: string,
+    service: string
+  ): Buffer {
+    //NOTE: Key Derivation
+    const kDate = crypto
+      .createHmac('sha256', 'AWS4' + key)
+      .update(date)
+      .digest()
+    const kRegion = crypto.createHmac('sha256', kDate).update(region).digest()
+    const kService = crypto
+      .createHmac('sha256', kRegion)
+      .update(service)
+      .digest()
+    return crypto.createHmac('sha256', kService).update('aws4_request').digest()
   }
 }

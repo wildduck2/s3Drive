@@ -1,2 +1,2 @@
-export * from './base64Utils'
+export * from './formateUtils'
 export * from './s3'

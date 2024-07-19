@@ -3,7 +3,10 @@ import { SaveBlob } from '../..'
 import { prisma } from '../../..'
 import { StorageService } from '../../index.types'
 import { uuidv7 } from 'uuidv7'
-import { saveBlobMetaDataType } from './DatabaseAdapter.types'
+import {
+  RetrievBlobMetaDataType,
+  saveBlobMetaDataType
+} from './DatabaseAdapter.types'
 
 export class DBService implements StorageService {
   async saveBlob({ id, name, size, data }: SaveBlob): Promise<Blob | null> {
@@ -33,6 +36,7 @@ export class DBService implements StorageService {
   }
 
   static async saveBlobMetaData({
+    id,
     user_id,
     blob_url,
     size,
@@ -42,6 +46,7 @@ export class DBService implements StorageService {
     try {
       const blob = await prisma.blobs.create({
         data: {
+          id,
           name,
           type,
           user_id,
@@ -55,6 +60,22 @@ export class DBService implements StorageService {
     } catch (error) {
       console.log(error)
 
+      return null
+    }
+  }
+
+  static async retrievBlobMetaData({ id, user_id }: RetrievBlobMetaDataType) {
+    try {
+      const blob = await prisma.blobs.findUnique({
+        where: {
+          id,
+          user_id
+        }
+      })
+      if (!blob) return null
+
+      return blob
+    } catch (error) {
       return null
     }
   }
