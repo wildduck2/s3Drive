@@ -11,4 +11,4 @@ export * from './Sonner'
 export * from './AlertDialog'
 
 //NOTE: Mine
-export * from './AddAttachmentSheet'
+export * from './UploadFileSheetWrapper'
