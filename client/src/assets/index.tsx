@@ -3,6 +3,22 @@ import { HtmlHTMLAttributes } from 'react'
 export interface IconType extends HtmlHTMLAttributes<SVGElement> {}
 
 export const Icon = {
+  spinner: ({ className }: IconType) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+    </svg>
+  ),
   trash2: ({ className }: IconType) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -77,44 +93,58 @@ export const Icon = {
 
   iconBackground: ({ className }: IconType) => (
     <svg
-      width="128"
-      height="128"
-      viewBox="0 0 128 128"
-      fill="none"
-      className={className}
       xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
     >
-      <g clipPath="url(#clip0_2_7030)">
-        <path
-          d="M121.863 19.6655L104.49 1.7625L92.7852 0H73.7812L57.1877 19.851L57.6267 115.781L73.781 128H118.272C121.03 128 123.265 125.765 123.265 123.009V31.1542L121.863 19.6655Z"
-          fill="#CED9F9"
-        />
-        <path
-          d="M112.91 22.237H103.602C102.489 22.237 101.587 21.3355 101.587 20.2232V10.353C101.587 5.1305 97.7747 0.80125 92.7852 0H99.4922C112.622 0 123.265 10.6388 123.265 23.7625V31.1542C122.508 26.1073 118.161 22.237 112.91 22.237Z"
-          fill="#B6C6F7"
-        />
-        <path
-          d="M29.577 0H73.781V128H29.577C26.8195 128 24.584 125.765 24.584 123.009V4.99075C24.584 2.2345 26.8195 0 29.577 0Z"
-          fill="#E7ECFC"
-        />
-        <path
-          d="M8.74724 42.059C6.53124 42.059 4.73474 43.8555 4.73474 46.0715V92.1035C4.73474 94.3195 6.53124 96.116 8.74724 96.116H54.372L60.4825 92.7318V45.8787L54.372 42.059H8.74724Z"
-          fill="#3B67E9"
-        />
-        <path
-          d="M104.01 92.1035V46.0715C104.01 43.8552 102.213 42.059 99.997 42.059H54.372V96.1162H99.9968C102.213 96.116 104.01 94.3195 104.01 92.1035Z"
-          fill="#2354E6"
-        />
-      </g>
-      <defs>
-        <clipPath id="clip0_2_7030">
-          <rect
-            width="128"
-            height="128"
-            fill="white"
-          />
-        </clipPath>
-      </defs>
+      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+      <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+    </svg>
+  ),
+
+  chekFile: ({ className }: IconType) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z" />
+      <path d="M14 2v4a2 2 0 0 0 2 2h4" />
+      <path d="m9 15 2 2 4-4" />
+    </svg>
+  ),
+
+  loop: ({ className }: IconType) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="m17 2 4 4-4 4" />
+      <path d="M3 11v-1a4 4 0 0 1 4-4h14" />
+      <path d="m7 22-4-4 4-4" />
+      <path d="M21 13v1a4 4 0 0 1-4 4H3" />
     </svg>
   ),
 }

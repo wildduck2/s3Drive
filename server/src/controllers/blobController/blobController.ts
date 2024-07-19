@@ -86,11 +86,7 @@ export class BlobController {
 
   async listBucketBlobs(req: Request, res: Response) {
     try {
-      const blobs = await S3Service.listS3Objects({
-        prefix: '',
-        delimiter: '/',
-        maxKeys: 10
-      })
+      const blobs = await S3Service.listS3Objects()
 
       // if (!blobs)
       //   return res

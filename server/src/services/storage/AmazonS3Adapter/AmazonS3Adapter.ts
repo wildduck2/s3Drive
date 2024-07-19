@@ -1,8 +1,21 @@
-import axios from 'axios'
+import axios, { AxiosProgressEvent } from 'axios'
 import { SaveBlob } from '../..'
 import { S3 } from '../../../utils/s3'
 import { supportedFileTypes } from '../../../constants'
 import { config } from '../../../config'
+import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3'
+import { compileFunction } from 'vm'
+
+interface ListObjectsOptions {
+  bucketName: string
+  prefix?: string
+  delimiter?: string
+  maxKeys?: number
+  startAfter?: string
+  accessKeyId: string
+  secretAccessKey: string
+  endpoint: string // Endpoint URL for Supabase S3
+}
 
 const s3 = {
   region: config.s3.region,
@@ -93,7 +106,7 @@ export class S3Service {
     }
 
     // Sign the URL for the request
-    await S3.getSignedURL(requestOptions, config.s3)
+    await S3.getSignedURL(requestOptions, s3)
 
     // Retrieve the file using Axios
     const response = await axios(requestOptions)
@@ -101,7 +114,6 @@ export class S3Service {
 
     return data
   }
-
   /**
    * Lists the contents of the S3 bucket.
    *
@@ -111,42 +123,62 @@ export class S3Service {
    *
    * @throws {Error} Throws an error if the request fails, including issues with network problems or response errors.
    */
-  static async listBlobs({
-    prefix,
-    delimiter,
-    maxKeys
-  }: {
-    prefix?: string
-    delimiter?: string
-    maxKeys?: number
-  }): Promise<string> {
-    // Prepare query parameters
-    const queryParams = new URLSearchParams()
-    if (prefix) queryParams.append('prefix', prefix)
-    if (delimiter) queryParams.append('delimiter', delimiter)
-    if (maxKeys) queryParams.append('max-keys', maxKeys.toString())
+  static async listS3Objects(): Promise<any[]> {
+    // try {
+    //   // Construct the request options for ListObjectsV2 equivalent operation
+    //   const request = {
+    //     method: 'GET',
+    //     url: `${config.s3.endPoint}/${config.s3.bucket}?list-type=2&max-keys=10`,
+    //     headers: {
+    //       Host: new URL(config.s3.endPoint).hostname
+    //     }
+    //   }
+    //
+    //   // Generate a signed URL for the request
+    //   const signedUrl = await S3.getSignedURL(request, config.s3)
+    //
+    //   if (!signedUrl) return []
+    //
+    //   // Make the HTTP GET request using the signed URL
+    //   const response = await axios.get(signedUrl)
+    //
+    //   // Assuming the response structure matches what AWS SDK would return
+    //   // You might need to adjust this based on the actual XML or JSON response structure
+    //   return response.data.Contents || []
+    // } catch (error) {
+    //   return error
+    // }
+    const client = new S3Client({
+      region: config.s3.region,
+      credentials: {
+        accessKeyId: config.s3.accessKey,
+        secretAccessKey: config.s3.secretAccessKey
+      },
+      endpoint: config.s3.endPoint,
+      forcePathStyle: true
+    })
 
-    const url = `${s3Endpoint}/?${queryParams.toString()}`
+    const results: any[] = []
 
-    // Prepare request options
-    const requestOptions = {
-      method: 'GET',
-      url: url,
-      headers: {
-        prefix: '',
-        delimiter: '',
-        'max-keys': 2,
-        Host: new URL(s3Endpoint).hostname
+    const command = new ListObjectsV2Command({
+      Bucket: config.s3.bucket,
+      Prefix: '',
+      Delimiter: '',
+      MaxKeys: 10,
+      StartAfter: ''
+    })
+
+    try {
+      const response = await client.send(command)
+
+      if (response.Contents) {
+        results.push(...response.Contents)
       }
+    } catch (error) {
+      console.error('Error listing objects:', error)
+      throw error
     }
 
-    // Sign the URL for the request
-    await S3.getSignedURL(requestOptions, s3)
-
-    // Retrieve the list of blobs using Axios
-    const response = await axios(requestOptions)
-    const data = response.data
-
-    return data
+    return results
   }
 }

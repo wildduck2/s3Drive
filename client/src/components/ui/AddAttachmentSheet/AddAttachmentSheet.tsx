@@ -1,105 +1,16 @@
 import { filesize } from 'filesize'
-import { uuidv7 as ID } from 'uuidv7'
 import { Button, ContextMenu, ContextMenuTrigger, Input, Progress } from '@/components/ui'
 import axios from 'axios'
 import { Icon } from '@/assets'
 import * as React from 'react'
 import { on } from 'events'
 import { toast } from 'sonner'
-import { StoreFile } from '@/utils'
+import { cn, StoreFile } from '@/utils'
 import { useEffect } from 'react'
+import { Inbox, UtilityPole } from 'lucide-react'
 
-export type AttachmentType = {
-  id: string
-  file: File
-  url?: string | undefined
-  name: string
-  type: string
-  size: string
-  progress: number
-  status: string
-}
-export const user = 'TheVimagen-test-user'
-interface Data {
-  signedUrl: string
-  token: string
-  path: string
-}
-const supportedFileTypes = [
-  'image/jpeg',
-  'image/png',
-  'image/svg+xml',
-  'application/zip',
-  'video/mp4',
-  'video/webm',
-  'video/ogg',
-]
 export const AddAttachmentSheetWrapper = () => {
-  const [uploadedFiles, setUploadedFiles] = React.useState<AttachmentType[]>([])
-  const [data, setData] = React.useState<Data | null>(null)
-
-  const getFileDataHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.currentTarget.files![0]
-    try {
-      //NOTE: check for the un acceptable file types
-      if (file && !supportedFileTypes.includes(file.type)) return toast.error('File is supported:')
-
-      if (file && file.size > 10 * 1024 * 1024) return toast.error('File has exceeded the max size')
-
-      const filedata: AttachmentType = {
-        id: ID(),
-        file: file,
-        name: file.name,
-        type: file.type,
-        size: file.size.toString(),
-        progress: 0,
-        status: 'pending',
-      }
-
-      setUploadedFiles((uploadedFiles) => [...uploadedFiles, filedata])
-
-      const data = await StoreFile(filedata)
-      if (!data) return toast.error('failed to uplaod the file')
-
-      toast.success('filed uploaded successfully')
-      return filedata
-    } catch (error) {
-      toast.error('failed to upload the file')
-    }
-  }
-
-  useEffect(() => {
-    const ws = new WebSocket('ws://localhost:8080')
-
-    ws.onopen = () => {
-      console.log('Connected to WebSocket server')
-    }
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data)
-
-        if (data.progress !== undefined) {
-          // setProgress(data.progress)
-          console.log('Progress:', data)
-        }
-      } catch (e) {
-        console.error('Error parsing message:', e)
-      }
-    }
-
-    ws.onerror = (event) => {
-      console.error('WebSocket error:', event)
-    }
-
-    ws.onclose = (event) => {
-      console.log('Disconnected from WebSocket server')
-    }
-
-    return () => {
-      ws.close()
-    }
-  }, [])
+  console.log(uploading)
 
   return (
     <>
@@ -121,21 +32,37 @@ export const AddAttachmentSheetWrapper = () => {
           </ContextMenu>
           <p className="mt-2 text-muted-foreground text-[.9rem]"> Only support .jpg, .png and .svg and zip files</p>
         </div>
-
+        <Button onClick={invoke}> invoke </Button>
         <ul className="add-attachment__body w-[484px] flex flex-col gap-2">
-          {uploadedFiles.map((invoice) => {
+          {uploadedFiles.map((invoice, idx) => {
             return (
               <li
                 key={invoice.id}
-                className="grid gap-2 p-2 border border-border  border-solid rounded-md h-fit items-start"
+                className={cn(
+                  'grid gap-2 p-2 border border-border  border-solid rounded-md h-fit items-start',
+                  uploading[idx] === 'loading'
+                    ? 'bg-zinc-300/30 border-zinc-300/30 opacity-75'
+                    : uploading[idx] === 'success'
+                      ? 'bg-green-300/30 border-green-300/30'
+                      : '',
+                )}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="relative">
-                      <span className="absolute top-1/2 left-1/2 translate-x-[-60%] translate-y-[-50%] text-white font-semibold">
-                        {invoice.type.split('/')[1]}
-                      </span>
-                      <Icon.iconBackground className="size-[50px]" />
+                      {uploading[idx] === 'loading' ? (
+                        <>
+                          <Icon.spinner className="spinner size-[25px]" />
+                        </>
+                      ) : uploading[idx] === 'success' ? (
+                        <>
+                          <Icon.chekFile className="size-[35px]" />
+                        </>
+                      ) : (
+                        <>
+                          <Icon.iconBackground className="size-[35px]" />
+                        </>
+                      )}
                     </div>
                     <div className="grid items-start">
                       <h3 className="inline-block font-medium text-[.97rem] truncate w-[300px]">
@@ -144,22 +71,40 @@ export const AddAttachmentSheetWrapper = () => {
                       <p className="truncate w-[92px] max-w-[92]">{filesize(+invoice.size, { round: 0 })}</p>
                     </div>
                   </div>
-                  <div className="font-medium pr-0">
-                    <Button
-                      variant="ghost"
-                      className="p-0 w-[1.8rem] h-[1.8rem]"
-                      onClick={() => {
-                        setUploadedFiles((uploadedFiles) => uploadedFiles.filter((item) => item.id !== invoice.id))
-                      }}
-                    >
-                      <Icon.X className="size-[20px]" />
-                    </Button>
-                  </div>
+
+                  {uploading[idx] === 'error' && uploading !== undefined && (
+                    <div className="font-medium pr-0">
+                      <Button
+                        variant="ghost"
+                        className="p-0 w-[1.8rem] h-[1.8rem]"
+                        onClick={() => {
+                          setUploadedFiles((uploadedFiles) => uploadedFiles.filter((item) => item.id !== invoice.id))
+                        }}
+                      >
+                        <Icon.loop className="size-[20px]" />
+                      </Button>
+                    </div>
+                  )}
+                  {uploading[idx] === undefined && (
+                    <div className="font-medium pr-0">
+                      <Button
+                        variant="ghost"
+                        className="p-0 w-[1.8rem] h-[1.8rem]"
+                        onClick={() => {
+                          setUploadedFiles((uploadedFiles) => uploadedFiles.filter((item) => item.id !== invoice.id))
+                        }}
+                      >
+                        <Icon.X className="size-[20px]" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
-                <Progress
-                  value={80}
-                  className="h-1"
-                />
+                {
+                  // <Progress
+                  //   value={80}
+                  //   className="h-1"
+                  // />
+                }
               </li>
             )
           })}

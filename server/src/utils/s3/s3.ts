@@ -74,6 +74,15 @@ export class S3 {
     // Set the Authorization header
     headers['Authorization'] =
       `${algorithm} Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`
+
+    // Construct the signed URL
+    const encodedCredentialScope = encodeURIComponent(credentialScope)
+    const encodedSignedHeaders = encodeURIComponent(signedHeaders)
+    const encodedSignature = encodeURIComponent(signature)
+
+    const signedUrl = `${url}?X-Amz-Algorithm=${algorithm}&X-Amz-Credential=${encodeURIComponent(accessKey)}%2F${encodedCredentialScope}&X-Amz-Date=${amzDate}&X-Amz-Expires=86400&X-Amz-SignedHeaders=${encodedSignedHeaders}&X-Amz-Signature=${encodedSignature}`
+
+    return signedUrl
   }
 
   /**

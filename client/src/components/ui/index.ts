@@ -8,6 +8,7 @@ export * from './Table'
 export * from './Sheet'
 export * from './Progress'
 export * from './Sonner'
+export * from './AlertDialog'
 
 //NOTE: Mine
 export * from './AddAttachmentSheet'
