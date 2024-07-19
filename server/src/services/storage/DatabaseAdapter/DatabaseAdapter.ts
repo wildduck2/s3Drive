@@ -43,6 +43,8 @@ export class DBService implements StorageService {
     name,
     type
   }: saveBlobMetaDataType) {
+    console.log(user_id)
+
     try {
       const blob = await prisma.blobs.create({
         data: {
@@ -72,6 +74,18 @@ export class DBService implements StorageService {
           user_id
         }
       })
+      if (!blob) return null
+
+      return blob
+    } catch (error) {
+      return null
+    }
+  }
+
+  static async listBlobsMetaData() {
+    try {
+      const blob = await prisma.blobs.findMany({})
+
       if (!blob) return null
 
       return blob

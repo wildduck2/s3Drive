@@ -27,30 +27,3 @@ app.use(blobRoutes)
 app.listen(config.port, () =>
   console.log(`server is running on port: ${config.port}`)
 )
-
-// import WebSocket from 'ws'
-// export const wss = new WebSocket.Server({ port: 8080 })
-// export const ws = new WebSocket('ws://localhost:8080') // Adjust URL if needed
-//
-// wss.on('connection', (clientWs) => {
-//   console.log('Client connected')
-//
-//   clientWs.on('message', (message) => {
-//     // const msgObj = JSON.parse(message.toString())
-//     // if (msgObj.progress !== undefined) {
-//     //   // Broadcast progress update to all connected clients except the sender
-//     //   wss.clients.forEach((client) => {
-//     //     if (client !== clientWs && client.readyState === WebSocket.OPEN) {
-//     //       client.send(JSON.stringify(msgObj))
-//     //     }
-//     //   })
-//     // }
-//   })
-//
-//   clientWs.on('close', () => {
-//     console.log('Client disconnected')
-//   })
-//   clientWs.on('error', (error) => {
-//     console.error('WebSocket error:', error)
-//   })
-// })

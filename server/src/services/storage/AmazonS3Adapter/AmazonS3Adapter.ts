@@ -54,7 +54,7 @@ export class S3Service {
 
       // Convert base64 data to Buffer
       const buffer = Buffer.from(data, 'base64')
-      const key = id
+      const key = id + name
 
       // Prepare request options for uploading the file
       const requestOptions = {

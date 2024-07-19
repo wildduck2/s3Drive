@@ -4,7 +4,7 @@ import { setState, StoreFile } from '@/utils'
 import { useCallback } from 'react'
 
 export const useUploadFile = (uploadedFiles: UseUploadFile[], setUploading: SetUploading) => {
-  const invoke = useCallback(() => {
+  const invoke = () => {
     const uploadPromises = uploadedFiles.map(
       (file, idx) =>
         new Promise<UploadedFilesType>((resolve, reject) => {
@@ -35,6 +35,6 @@ export const useUploadFile = (uploadedFiles: UseUploadFile[], setUploading: SetU
       loading: 'Uploading files',
       error: 'Failed to upload some files',
     })
-  }, [])
+  }
   return invoke
 }

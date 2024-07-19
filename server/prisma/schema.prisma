@@ -14,13 +14,13 @@ datasource db {
 }
 
 model User {
-    id             String     @id @default(uuid()) @db.Char(36)
-    user_name      String     @unique
-    email          String     @unique
+    id             String      @id @default(uuid()) @db.Char(36)
+    user_name      String      @unique
+    email          String      @unique
     password       String
     verified_email Boolean?
-    createdAt      DateTime   @default(now())
-    DriverLog      DriverLog?
+    createdAt      DateTime    @default(now())
+    DriverLog      DriverLog[]
     Blobs          Blobs[]
     Session        Session?
     Otp            Otp?
@@ -35,11 +35,13 @@ model Blobs {
     name      String
     user_id   String
     blob_url  String
+    blob_id   String?  @db.Char(36)
     createdAt DateTime @default(now())
 
-    User   User    @relation(fields: [user_id], references: [id])
-    blobId String? @db.Char(36)
-    Blob   Blob?   @relation(fields: [blobId], references: [id])
+    User      User        @relation(fields: [user_id], references: [id])
+    Blob      Blob?       @relation(fields: [blob_id], references: [id])
+
+    DriverLog DriverLog[]
 
     @@index([id, user_id], map: "blobs")
 }
@@ -56,14 +58,17 @@ model Blob {
 
 model DriverLog {
     id        String   @id @unique @default(uuid()) @db.Char(36)
-    data_id   String
-    user_id   String   @unique
+    blobs_id  String
+    user_id   String
+    action    String
     createdAt DateTime @default(now())
 
-    User User @relation(fields: [user_id], references: [id])
-    Blob Blob @relation(fields: [data_id], references: [id])
+    Blobs  Blobs   @relation(fields: [blobs_id], references: [id])
+    User   User    @relation(fields: [user_id], references: [id])
+    Blob   Blob?   @relation(fields: [blobId], references: [id])
+    blobId String? @db.Char(36)
 
-    @@index([id, data_id], map: "driver_log")
+    @@index([id, blobs_id], map: "driver_log")
 }
 
 model Session {
