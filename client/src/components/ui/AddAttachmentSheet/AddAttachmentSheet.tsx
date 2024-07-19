@@ -1,4 +1,5 @@
 import { filesize } from 'filesize'
+import { uuidv7 as ID } from 'uuidv7'
 import { Button, ContextMenu, ContextMenuTrigger, Input, Progress } from '@/components/ui'
 import axios from 'axios'
 import { Icon } from '@/assets'
@@ -6,8 +7,62 @@ import * as React from 'react'
 import { on } from 'events'
 import { toast } from 'sonner'
 import { cn, StoreFile } from '@/utils'
-import { useEffect } from 'react'
-import { Inbox, UtilityPole } from 'lucide-react'
+
+function useHandleFileUpload(uploadedFiles: AttachmentType[]) {
+  const invoke = () => {
+    const uploadPromises = uploadedFiles.map(
+      (file, idx) =>
+        new Promise<AttachmentType>((resolve, reject) => {
+          const cb = async () => {
+            setUploading((state) => {
+              const newState = [...state]
+              newState[idx] = 'loading'
+              return newState
+            })
+
+            try {
+              const data = await StoreFile(file)
+              if (!data) {
+                setUploading((state) => {
+                  const newState = [...state]
+                  newState[idx] = 'error'
+                  return newState
+                })
+                reject(null)
+              }
+
+              resolve(file)
+              setUploading((state) => {
+                const newState = [...state]
+                newState[idx] = 'success'
+                return newState
+              })
+            } catch (error) {
+              setUploading((state) => {
+                const newState = [...state]
+                newState[idx] = 'error'
+                return newState
+              })
+              reject(null)
+            }
+          }
+
+          // Initial call to the callback function
+          cb()
+        }),
+    )
+
+    const promise = Promise.all(uploadPromises)
+
+    // Toast configuration
+    toast.promise(promise, {
+      success: 'Files uploaded successfully',
+      loading: 'Uploading files',
+      error: 'Failed to upload some files',
+    })
+  }
+  return { invoke, uploading }
+}
 
 export const AddAttachmentSheetWrapper = () => {
   console.log(uploading)
