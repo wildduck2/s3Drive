@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { ActionLog, AdapterService, DBService, S3Service } from '../../services'
 import { StoreBlobBodyType } from './blobController.types'
 import { FormatUtils } from '../../utils/formateUtils'
-const user_id = '56159557-5a2b-4200-8c45-d263d34e42b1'
+const user_id = '4e32491a-aaf3-4e29-a22b-c0cf8668c43b'
 
 export class BlobController {
   private storageService: AdapterService
@@ -21,32 +21,19 @@ export class BlobController {
         Base64Data = FormatUtils.encode(Base64Data)
       }
 
-      //NOTE: uplaoding the file to the s3
-      const s3blobUrl = await S3Service.saveBlob({
+      //NOTE: saving the blob
+      const blob = await this.storageService.adapter.saveBlob({
         id,
         name,
+        type,
+        data,
         size,
-        type,
-        data: Base64Data
+        user_id
       })
-      if (!s3blobUrl)
+      if (!blob)
         return res
-          .status(401)
-          .json({ error: 'failed to uplaod the file', data: null })
-
-      //NOTE: Save metadata to the database
-      const data = await DBService.saveBlobMetaData({
-        id,
-        user_id,
-        type,
-        name,
-        blob_url: s3blobUrl,
-        size: size!.toString()
-      })
-      if (!data)
-        return res
-          .status(400)
-          .send({ error: 'failed to store file data into the db', data: null })
+          .status(404)
+          .send({ error: 'failed to store blob', data: null })
 
       //NOTE: tracking actions
       const action = await ActionLog.storeAction({
@@ -73,22 +60,14 @@ export class BlobController {
 
     try {
       //NOTE: getting metadata
-      const blobMetaData = await DBService.retrievBlobMetaData({
+      const blobMetaData = await this.storageService.adapter.getBlob({
         id,
-        user_id: 'a6f9914c-33ba-4788-aa18-12e658567c8d'
+        user_id
       })
       if (!blobMetaData)
-        res.status(404).send({ error: 'Blob not found', data: null })
-
-      //NOTE: getting the blob file
-      const blob = await S3Service.getBlob({ id })
-      if (!blob)
-        return res.status(404).send({ error: 'Blob not found', data: null })
-
-      const blobData = {
-        ...blobMetaData,
-        data: blob
-      }
+        return res
+          .status(404)
+          .json({ error: 'failed to get blob metadata', blobMetaData })
 
       //NOTE: tracking actions
       const action = await ActionLog.storeAction({
@@ -99,9 +78,9 @@ export class BlobController {
       if (!action)
         return res
           .status(404)
-          .json({ error: 'failed to track this action', blobData })
+          .json({ error: 'failed to track this action', blobMetaData })
 
-      return res.status(200).json({ error: null, data: blobData })
+      return res.status(200).json({ error: null, data: blobMetaData })
     } catch (error) {
       return res.send({ error: 'Blob not found', data: null })
     }
@@ -109,7 +88,7 @@ export class BlobController {
 
   async listBucketBlobs(req: Request, res: Response) {
     try {
-      const blobs = await DBService.listBlobsMetaData()
+      const blobs = await DBService.listBlobsMetaData({ pageSize: 5, page: 1 })
 
       if (!blobs)
         return res

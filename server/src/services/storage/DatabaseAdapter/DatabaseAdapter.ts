@@ -82,15 +82,36 @@ export class DBService implements StorageService {
     }
   }
 
-  static async listBlobsMetaData() {
+  static async listBlobsMetaData({ page, pageSize }: ListBlobsMetaDataType) {
     try {
-      const blob = await prisma.blobs.findMany({})
+      const skip = (page - 1) * pageSize
+      const blobs = await prisma.blobs.findMany({
+        skip: skip,
+        take: pageSize,
+        orderBy: {
+          createdAt: 'desc'
+        }
+      })
 
-      if (!blob) return null
+      const totalCount = await prisma.blobs.count()
 
-      return blob
+      return {
+        blobs,
+        pagination: {
+          page,
+          pageSize,
+          totalCount,
+          totalPages: Math.ceil(totalCount / pageSize)
+        }
+      }
     } catch (error) {
+      console.error(error)
       return null
     }
   }
+}
+
+export type ListBlobsMetaDataType = {
+  page: number
+  pageSize: number
 }

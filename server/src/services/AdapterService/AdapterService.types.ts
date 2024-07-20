@@ -4,4 +4,5 @@ export type SaveBlob = {
   data: string
   type: string
   size?: string
+  user_id: string
 }
