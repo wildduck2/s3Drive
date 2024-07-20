@@ -74,7 +74,7 @@ export function Upload() {
             variant="outline"
             className="gap-2 w-fit"
           >
-            <Icon.upload className="size-[19px]" />
+            <Icon.pluscircle className="size-[19px]" />
             <span>Upload</span>
           </Button>
         </SheetTrigger>

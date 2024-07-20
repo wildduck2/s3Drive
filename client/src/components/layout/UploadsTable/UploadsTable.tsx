@@ -26,115 +26,83 @@ import {
   Button,
   Badge,
   ScrollArea,
+  Skeleton,
 } from '@/components/ui'
-import { PaginationType, retriveFiles } from '@/utils'
-import { FetchNextPageOptions, Mutation, useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import { format, fromat } from 'date-fns'
+import { retriveFiles } from '@/utils'
+import { useQuery } from '@tanstack/react-query'
+import { format } from 'date-fns'
 import { filesize } from 'filesize'
 import { MoreHorizontal } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { UploadsTableContentProps, UploadsTablePaginationProps } from './UploadsTable.types'
+import { Icon } from '@/assets'
 
-export default function UploadsTable() {
-  const {
-    data: blobs,
-    status,
-    fetchNextPage,
-    fetchPreviousPage,
-    isFetching,
-  } = useInfiniteQuery({
-    queryKey: ['files'],
+export function UploadsTable() {
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const { data, status } = useQuery({
+    queryKey: ['files', { currentPage }],
     queryFn: retriveFiles,
-    initialPageParam: 0,
-    getNextPageParam: (lastPage) => {
-      if (lastPage.pagination.page < lastPage.pagination.totalPages - 1) {
-        return lastPage.pagination.page + 1
-      } else {
-        return undefined
-      }
-    },
+    refetchOnWindowFocus: false,
   })
 
-  return (
-    <>
-      <Card>
-        <CardHeader>
-          <CardTitle>File Uploaded </CardTitle>
-          <CardDescription>Manage your Files and view their content or download them.</CardDescription>
-        </CardHeader>
-        <CardContent className="h-[560px]">
-          <ScrollArea className="h-[535px] border border-border border-solid rounded-md">
-            <Table>
-              <UploadsTableHeader />
+  console.log('hi')
 
-              {status === 'success' ? (
-                <UploadsTableContent blobs={blobs.pages[0].blobs} />
-              ) : (
-                Array.from({ length: 10 }, (_, index) => (
-                  <div
-                    key={index}
-                    className="p-4 border rounded-md bg-gray-200"
-                  >
-                    <p>Item {index + 1}</p>
-                  </div>
-                ))
-              )}
-            </Table>
-          </ScrollArea>
-        </CardContent>
-        <CardFooter className="justify-start">
-          {blobs && (
-            <UploadsTablePagination
-              pagination={blobs.pages[0].pagination}
-              fetchNextPage={fetchNextPage}
-              fetchPreviousPage={fetchPreviousPage}
-            />
-          )}
-        </CardFooter>
-      </Card>
-    </>
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>File Uploaded</CardTitle>
+        <CardDescription>Manage your Files and view their content or download them.</CardDescription>
+      </CardHeader>
+      <CardContent className="h-[560px] w-[964px]">
+        <ScrollArea className="h-[535px] border border-border border-solid rounded-md">
+          <Table>
+            <UploadsTableHeader />
+            {status === 'success' ? (
+              <UploadsTableContent blobs={data.blobs} />
+            ) : (
+              <TableBody className="relative h-[446px]">
+                <Icon.spinner className="spinner absolute top-1/2 left-1/2" />
+              </TableBody>
+            )}
+          </Table>
+        </ScrollArea>
+      </CardContent>
+      <CardFooter className="justify-start">
+        {data && (
+          <UploadsTablePagination
+            currentPage={currentPage}
+            totalPages={data.pagination.totalPages}
+            setCurrentPage={setCurrentPage}
+          />
+        )}
+      </CardFooter>
+    </Card>
   )
 }
 
-export const UploadsTableHeader = () => {
-  return (
-    <TableHeader>
-      <TableRow>
-        <TableHead className="hidden w-[100px] sm:table-cell">
-          <span className="sr-only"> Image </span>
-        </TableHead>
-        <TableHead className="md:max-w-[280px] lg:max-w-[400px] lg:w-[400px]"> Name </TableHead>
-        <TableHead className="hidden md:table-cell w-[81px]"> Type </TableHead>
-        <TableHead className="hidden md:table-cell w-[81px]"> Size </TableHead>
-        <TableHead className="hidden md:table-cell w-[200px]"> Uploaded at </TableHead>
-        <TableHead>
-          <span className="sr-only"> Actions </span>
-        </TableHead>
-      </TableRow>
-    </TableHeader>
-  )
-}
-export type blobMetaData = {
-  id: string
-  size: string
-  type: string
-  name: string
-  user_id: string
-  blob_url: string
-  blob_id: string | null
-  createdAt: Date
-} | null
+export const UploadsTableHeader = () => (
+  <TableHeader>
+    <TableRow>
+      <TableHead className="hidden w-[96.43px] sm:table-cell">
+        <span className="sr-only"> Image </span>
+      </TableHead>
+      <TableHead className="md:max-w-[280px] lg:max-w-[400px] lg:w-[400px]"> Name </TableHead>
+      <TableHead className="hidden md:table-cell w-[81px]"> Type </TableHead>
+      <TableHead className="hidden md:table-cell w-[81px]"> Size </TableHead>
+      <TableHead className="hidden md:table-cell w-[200px]"> Uploaded at </TableHead>
+      <TableHead className="w-[71.95px]">
+        <span className="sr-only"> Actions </span>
+      </TableHead>
+    </TableRow>
+  </TableHeader>
+)
 
-export type UploadsTableContentProps = {
-  blobs: blobMetaData[]
-}
-
-export const UploadsTableContent = ({ blobs }: UploadsTableContentProps) => {
-  console.log(blobs)
-
-  return blobs.length ? (
+export const UploadsTableContent = ({ blobs }: UploadsTableContentProps) =>
+  blobs.length ? (
     <TableBody>
       {blobs.map((blob) => (
-        <TableRow>
-          <TableCell className="hidden sm:table-cell">
+        <TableRow key={blob.id}>
+          <TableCell className="hidden sm:table-cell w-[100px]">
             <img
               alt={blob.name}
               src={blob.blob_url}
@@ -143,13 +111,11 @@ export const UploadsTableContent = ({ blobs }: UploadsTableContentProps) => {
               width="64"
             />
           </TableCell>
-          <TableCell className="font-medium truncate md:max-w-[280px] lg:max-w-[400px] lg:kjw-[400px]">
-            {blob.name}
-          </TableCell>
+          <TableCell className="font-medium truncate max-w-[200px] w-[200px] ">{blob.name}</TableCell>
           <TableCell className="hidden md:table-cell w-[81px]">
-            <Badge variant="outline"> {blob.type.split('/')[1]} </Badge>
+            <Badge variant="outline">{blob.type.split('/')[1]}</Badge>
           </TableCell>
-          <TableCell className="hidden md:table-cell w-[81px]"> {filesize(+blob.size, { round: 0 })} </TableCell>
+          <TableCell className="hidden md:table-cell w-[81px]">{filesize(+blob.size, { round: 0 })}</TableCell>
           <TableCell className="hidden md:table-cell w-[200px]">{format(new Date(blob.createdAt), 'PPpp')}</TableCell>
           <TableCell>
             <DropdownMenu>
@@ -160,15 +126,15 @@ export const UploadsTableContent = ({ blobs }: UploadsTableContentProps) => {
                   variant="ghost"
                 >
                   <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only"> Toggle menu </span>
+                  <span className="sr-only">Toggle menu</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions </DropdownMenuLabel>
-                <DropdownMenuItem> Edit </DropdownMenuItem>
-                <DropdownMenuItem> Download </DropdownMenuItem>
-                <DropdownMenuItem> Share </DropdownMenuItem>
-                <DropdownMenuItem> Delete </DropdownMenuItem>
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem>Edit</DropdownMenuItem>
+                <DropdownMenuItem>Download</DropdownMenuItem>
+                <DropdownMenuItem>Share</DropdownMenuItem>
+                <DropdownMenuItem>Delete</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </TableCell>
@@ -187,43 +153,38 @@ export const UploadsTableContent = ({ blobs }: UploadsTableContentProps) => {
       </TableRow>
     </TableBody>
   )
-}
 
-export function UploadsTablePagination({
-  pagination,
-  fetchNextPage,
-  fetchPreviousPage,
-}: {
-  pagination: PaginationType
-  fetchNextPage: (options?: FetchNextPageOptions) => void
-  fetchPreviousPage: () => void
-}) {
-  const { page, totalPages } = pagination
-
-  const getPaginationItems = () => {
-    return Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
-      <PaginationItem key={pageNumber}>
-        <PaginationLink isActive={pageNumber === page}>{pageNumber}</PaginationLink>
-      </PaginationItem>
-    ))
-  }
-
+export function UploadsTablePagination({ currentPage, totalPages, setCurrentPage }: UploadsTablePaginationProps) {
   return (
     <Pagination>
       <PaginationContent>
-        {page > 1 && (
-          <PaginationItem>
-            <PaginationPrevious href="#" />
-          </PaginationItem>
-        )}
+        <PaginationItem>
+          <Button
+            variant="outline"
+            disabled={currentPage === 1}
+            className="border-solid border p-0"
+            onClick={() => setCurrentPage(currentPage > 1 ? currentPage - 1 : 1)}
+          >
+            <PaginationPrevious className="w-[8rem]" />
+          </Button>
+        </PaginationItem>
+        <Badge
+          className="w-[4rem] h-[2rem] flex justify-center items-center border-solid border p-0 text-[.8rem]"
+          variant="outline"
+        >
+          {currentPage}/{totalPages}
+        </Badge>
 
-        {getPaginationItems()}
-
-        {page < totalPages && (
-          <PaginationItem>
-            <PaginationNext onClick={() => fetchNextPage({})} />
-          </PaginationItem>
-        )}
+        <PaginationItem>
+          <Button
+            variant="outline"
+            disabled={currentPage >= totalPages}
+            className="border-solid border p-0"
+            onClick={() => setCurrentPage(currentPage + 1)}
+          >
+            <PaginationNext className="w-[8rem]" />
+          </Button>
+        </PaginationItem>
       </PaginationContent>
     </Pagination>
   )
