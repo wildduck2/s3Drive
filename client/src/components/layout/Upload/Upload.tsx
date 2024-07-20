@@ -72,7 +72,7 @@ export function Upload() {
           <Button
             type="button"
             variant="outline"
-            className="gap-2"
+            className="gap-2 w-fit"
           >
             <Icon.upload className="size-[19px]" />
             <span>Upload</span>
