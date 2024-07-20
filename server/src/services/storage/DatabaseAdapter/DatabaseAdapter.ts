@@ -1,9 +1,11 @@
-import { Blob } from '@prisma/client'
+import { Blob, Blobs } from '@prisma/client'
 import { SaveBlob } from '../..'
 import { prisma } from '../../..'
 import { StorageService } from '../../index.types'
 import { uuidv7 } from 'uuidv7'
 import {
+  ListBlobsMetaDataType,
+  PaginationType,
   RetrievBlobMetaDataType,
   saveBlobMetaDataType
 } from './DatabaseAdapter.types'
@@ -82,26 +84,35 @@ export class DBService implements StorageService {
     }
   }
 
-  static async listBlobsMetaData({ page, pageSize }: ListBlobsMetaDataType) {
+  static async listBlobsMetaData({
+    page,
+    pageSize
+  }: ListBlobsMetaDataType): Promise<{
+    blobs: Blobs[]
+    pagination: PaginationType
+  } | null> {
     try {
-      const skip = (page - 1) * pageSize
+      const skip = (+page - 1) * +pageSize
       const blobs = await prisma.blobs.findMany({
         skip: skip,
-        take: pageSize,
+        take: +pageSize,
         orderBy: {
           createdAt: 'desc'
         }
       })
 
       const totalCount = await prisma.blobs.count()
+      const totalPages = Math.ceil(totalCount / +pageSize)
 
       return {
         blobs,
         pagination: {
-          page,
-          pageSize,
+          page: +page,
+          nextPage: +page < +totalPages ? +page + 1 : null,
+          prevPage: +page > 1 ? +page - 1 : null,
+          pageSize: +pageSize,
           totalCount,
-          totalPages: Math.ceil(totalCount / pageSize)
+          totalPages: Math.ceil(totalCount / +pageSize)
         }
       }
     } catch (error) {
@@ -109,9 +120,4 @@ export class DBService implements StorageService {
       return null
     }
   }
-}
-
-export type ListBlobsMetaDataType = {
-  page: number
-  pageSize: number
 }

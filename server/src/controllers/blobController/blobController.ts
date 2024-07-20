@@ -1,6 +1,9 @@
 import { Request, Response } from 'express'
 import { ActionLog, AdapterService, DBService, S3Service } from '../../services'
-import { StoreBlobBodyType } from './blobController.types'
+import {
+  ListBlobsMetaDataType,
+  StoreBlobBodyType
+} from './blobController.types'
 import { FormatUtils } from '../../utils/formateUtils'
 const user_id = '4e32491a-aaf3-4e29-a22b-c0cf8668c43b'
 
@@ -87,8 +90,11 @@ export class BlobController {
   }
 
   async listBucketBlobs(req: Request, res: Response) {
+    const { pageSize, page }: ListBlobsMetaDataType = req.query
+    console.log(pageSize, page)
+
     try {
-      const blobs = await DBService.listBlobsMetaData({ pageSize: 5, page: 1 })
+      const blobs = await DBService.listBlobsMetaData({ pageSize, page })
 
       if (!blobs)
         return res
