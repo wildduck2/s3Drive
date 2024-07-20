@@ -1,22 +1,24 @@
 import { toast } from 'sonner'
-import { SetUploading, UploadedFilesType } from './useUploadFiles.types'
 import { setState, StoreFile } from '@/utils'
-import { useCallback } from 'react'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { SetUploadingFiles } from '@/components/layout'
+import { UseUploadFileType } from './useUploadFiles.types'
 
-export const useUploadFile = (uploadedFiles: UseUploadFile[], setUploading: SetUploading) => {
+export const useUploadFile = (uploadedFiles: UseUploadFileType[], setUploading: SetUploadingFiles) => {
+  const uplaod = useMutation({
+    mutationKey: ['file'],
+    mutationFn: (file: UseUploadFileType) => StoreFile(file.file),
+  })
+
   const invoke = () => {
     const uploadPromises = uploadedFiles.map(
       (file, idx) =>
-        new Promise<UploadedFilesType>((resolve, reject) => {
+        new Promise<UseUploadFileType>((resolve, reject) => {
           const cb = async () => {
             setState({ setState: setUploading, status: 'loading', idx })
 
             try {
-              const data = await StoreFile(file.file)
-              if (!data) {
-                setState({ setState: setUploading, status: 'error', idx })
-                reject(null)
-              }
+              await uplaod.mutateAsync(file)
 
               resolve(file)
               setState({ setState: setUploading, status: 'success', idx })

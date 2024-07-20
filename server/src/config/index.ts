@@ -15,7 +15,8 @@ export const config = {
     accessKey: process.env.NEXT_PUBLIC_SUPABASE_ACCESS_KEY || '',
     secretAccessKey: process.env.NEXT_PUBLIC_SUPABASE_SECRET_ACCESS_KEY || '',
     bucket: process.env.NEXT_PUBLIC_SUPABASE_BUCKET || '',
-    region: process.env.NEXT_PUBLIC_SUPABASE_REGION || ''
+    region: process.env.NEXT_PUBLIC_SUPABASE_REGION || '',
+    endPointUrl: process.env.NEXT_PUBLIC_SUPABASE_END_POINT_URL || ''
   },
   local: {
     storagePath: process.env.LOCAL_STORAGE_PATH || './storage'

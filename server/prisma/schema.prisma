@@ -29,7 +29,7 @@ model User {
 }
 
 model Blobs {
-    id        String   @id @unique @default(uuid()) @db.Char(36)
+    id        String   @id @default(uuid()) @db.Char(36)
     size      String
     type      String
     name      String
@@ -38,8 +38,8 @@ model Blobs {
     blob_id   String?  @db.Char(36)
     createdAt DateTime @default(now())
 
-    User      User        @relation(fields: [user_id], references: [id])
-    Blob      Blob?       @relation(fields: [blob_id], references: [id])
+    User User  @relation(fields: [user_id], references: [id])
+    Blob Blob? @relation(fields: [blob_id], references: [id])
 
     DriverLog DriverLog[]
 
@@ -47,32 +47,29 @@ model Blobs {
 }
 
 model Blob {
-    id        String      @id @unique @default(uuid()) @db.Char(36)
+    id        String   @id @default(uuid()) @db.Char(36)
     data      Bytes
-    createdAt DateTime    @default(now())
-    DriverLog DriverLog[]
+    createdAt DateTime @default(now())
     Blobs     Blobs[]
 
     @@index([id], map: "blob")
 }
 
 model DriverLog {
-    id        String   @id @unique @default(uuid()) @db.Char(36)
+    id        String   @id @default(uuid()) @db.Char(36)
     blobs_id  String
     user_id   String
     action    String
     createdAt DateTime @default(now())
 
-    Blobs  Blobs   @relation(fields: [blobs_id], references: [id])
-    User   User    @relation(fields: [user_id], references: [id])
-    Blob   Blob?   @relation(fields: [blobId], references: [id])
-    blobId String? @db.Char(36)
+    Blobs Blobs @relation(fields: [blobs_id], references: [id])
+    User  User  @relation(fields: [user_id], references: [id])
 
     @@index([id, blobs_id], map: "driver_log")
 }
 
 model Session {
-    id         String   @id @unique @default(uuid()) @db.Char(36)
+    id         String   @id @default(uuid()) @db.Char(36)
     sid        String   @unique
     user_id    String?  @unique
     user       User?    @relation(fields: [user_id], references: [id])
@@ -84,7 +81,7 @@ model Session {
 }
 
 model Otp {
-    id         String   @id @unique @default(uuid()) @db.Char(36)
+    id         String   @id @default(uuid()) @db.Char(36)
     user_id    String   @unique
     otp        String
     created_at DateTime @default(now())

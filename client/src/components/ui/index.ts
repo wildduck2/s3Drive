@@ -9,6 +9,10 @@ export * from './Sheet'
 export * from './Progress'
 export * from './Sonner'
 export * from './AlertDialog'
+export * from './DropdownMenu'
+export * from './Card'
+export * from './Pagination'
+export * from './ScrollArea'
 
 //NOTE: Mine
 export * from './UploadFileSheetWrapper'

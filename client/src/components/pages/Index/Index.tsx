@@ -1,9 +1,15 @@
-import { Upload } from '@/components/layout'
+import { Header, Upload } from '@/components/layout'
+import UploadsTable from '@/components/layout/UploadsTable/UploadsTable'
 
 export const Index = () => {
   return (
-    <section className="min-h-screen grid place-content-center w-full">
-      <Upload />
-    </section>
+    <main className="grid w-full">
+      <Header />
+
+      <section className="grid place-content-center w-full gap-4">
+        <Upload />
+        <UploadsTable />
+      </section>
+    </main>
   )
 }
