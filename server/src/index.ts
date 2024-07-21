@@ -11,14 +11,12 @@ export const prisma = new PrismaClient()
 //NOTE: init the server
 export const app = express()
 
-app.use(bodyParser.json({ limit: '200mb' }))
-app.use(bodyParser.urlencoded({ limit: '200mb', extended: false }))
+app.use(bodyParser.json({ limit: '40mb' }))
+app.use(bodyParser.urlencoded({ limit: '40mb', extended: false }))
 app.use(
   cors({
-    origin: 'http://localhost:5173', // Allow your frontend origin
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-    optionsSuccessStatus: 204
+    origin: 'http://localhost:5173',
+    credentials: true
   })
 )
 

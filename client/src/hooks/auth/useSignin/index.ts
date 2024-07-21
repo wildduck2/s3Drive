@@ -20,7 +20,7 @@ export const useSignin = () => {
       )
       if (!token) return null
 
-      localStorage.setItem('token', JSON.stringify(token))
+      localStorage.setItem('token', JSON.stringify(token.token))
       router({ to: '/' })
 
       return token

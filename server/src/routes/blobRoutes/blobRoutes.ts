@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { authMiddleware } from '../../middlewares'
 import { BlobController } from '../../controllers'
-import { AdapterService } from '../../services'
+import { AdapterService, StorageType } from '../../services'
 
 // Create a new Express Router instance
 const router = Router()
@@ -39,7 +39,7 @@ router.put('/v1/blobs', authMiddleware, (req, res) => {
  */
 router.get('/v1/blobs/:id', authMiddleware, (req, res) => {
   // Create an instance of AdapterService with the selected storage adapter
-  const adapterService = new AdapterService(req.body.adapter)
+  const adapterService = new AdapterService(StorageType.LOCAL)
 
   // Create an instance of BlobController with the adapter service
   const blobController = new BlobController(adapterService)
@@ -59,7 +59,7 @@ router.get('/v1/blobs/:id', authMiddleware, (req, res) => {
  */
 router.get('/v1/blobs', authMiddleware, (req, res) => {
   // Create an instance of AdapterService with the selected storage adapter
-  const adapterService = new AdapterService(req.body.adapter)
+  const adapterService = new AdapterService(req.query.adapter as StorageType)
 
   // Create an instance of BlobController with the adapter service
   const blobController = new BlobController(adapterService)

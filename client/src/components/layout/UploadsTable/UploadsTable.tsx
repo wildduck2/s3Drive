@@ -26,17 +26,24 @@ import {
   ScrollArea,
 } from '@/components/ui'
 import { retriveFiles } from '@/utils'
-import { useQuery } from '@tanstack/react-query'
+import { Mutation, useMutation, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { filesize } from 'filesize'
 import { MoreHorizontal } from 'lucide-react'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { UploadsTableContentProps, UploadsTablePaginationProps } from './UploadsTable.types'
 import { Icon } from '@/assets'
+import { toast } from 'sonner'
+import axios from 'axios'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/context'
+
+//NOTE: just a function will be removed later
+export const comminSoon = () => toast.info('this feature is not ready yet will come soon!!')
 
 export function UploadsTable() {
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const { data, status } = useQuery({
+  const { data, status, isError } = useQuery({
     queryKey: ['files', { currentPage }],
     queryFn: retriveFiles,
     refetchOnWindowFocus: false,
@@ -52,8 +59,8 @@ export function UploadsTable() {
         <ScrollArea className="h-[535px] border border-border border-solid rounded-md">
           <Table>
             <UploadsTableHeader />
-            {status === 'success' ? (
-              <UploadsTableContent blobs={data.blobs} />
+            {status === 'success' && !isError ? (
+              <UploadsTableContent blobs={data?.blobs} />
             ) : (
               <TableBody className="relative h-[446px]">
                 <TableRow>
@@ -96,8 +103,38 @@ export const UploadsTableHeader = () => (
   </TableHeader>
 )
 
-export const UploadsTableContent = ({ blobs }: UploadsTableContentProps) =>
-  blobs.length ? (
+export type DownLoadResponse = {}
+
+export async function DownloadFile({ id, adapter }: { id: string; adapter: string }): Promise<DownLoadResponse | null> {
+  const token = JSON.parse(localStorage.getItem('token'))
+
+  console.log(id)
+
+  try {
+    //NOTE: make the req
+    const { data } = await axios.get<Awaited<Promise<DownLoadResponse>>>(`${process.env.ROOT_URL}/v1/blobs/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    if (!data) return null
+
+    return data
+  } catch (error) {
+    toast.error('failed to upload the file')
+    return null
+  }
+}
+
+export const UploadsTableContent = ({ blobs }: UploadsTableContentProps) => {
+  const adapter = useSelector((state: RootState) => state.utils.adapter)
+  const downloadFileRef = useRef<string>(null)
+  const { mutateAsync } = useMutation({
+    mutationKey: ['download'],
+    mutationFn: () => DownloadFile({ id: downloadFileRef.current, adapter }),
+  })
+  return blobs?.length ? (
     <TableBody>
       {blobs.map((blob) => (
         <TableRow key={blob.id}>
@@ -130,10 +167,17 @@ export const UploadsTableContent = ({ blobs }: UploadsTableContentProps) =>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem>Edit</DropdownMenuItem>
-                <DropdownMenuItem>Download</DropdownMenuItem>
-                <DropdownMenuItem>Share</DropdownMenuItem>
-                <DropdownMenuItem>Delete</DropdownMenuItem>
+                <DropdownMenuItem onClick={comminSoon}>Edit</DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    downloadFileRef.current = blob.id
+                    mutateAsync()
+                  }}
+                >
+                  Download
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={comminSoon}>Share</DropdownMenuItem>
+                <DropdownMenuItem onClick={comminSoon}>Delete</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </TableCell>
@@ -152,6 +196,7 @@ export const UploadsTableContent = ({ blobs }: UploadsTableContentProps) =>
       </TableRow>
     </TableBody>
   )
+}
 
 export function UploadsTablePagination({ currentPage, totalPages, setCurrentPage }: UploadsTablePaginationProps) {
   return (

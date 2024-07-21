@@ -8,7 +8,7 @@ import {
   SelectValue,
 } from '@/components/ui'
 import { setAdapter } from '@/context'
-import { useCallback, useEffect } from 'react'
+import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
 export const UploadAdapterPicker = () => {

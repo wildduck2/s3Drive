@@ -88,12 +88,15 @@ export class AmazonS3Adapter implements StorageService {
     id: string
     user_id: string
   }): Promise<BlobData | null> {
+    console.log('hi')
     try {
       // Retrieve blob metadata from the database
       const blobMetaData = await DBService.retrievBlobMetaData({
         id,
         user_id
       })
+      console.log(blobMetaData)
+
       if (!blobMetaData) return null
 
       // Retrieve the blob file from S3

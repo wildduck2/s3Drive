@@ -1,6 +1,6 @@
 import { toast } from 'sonner'
 import { setState, StoreFile } from '@/utils'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { SetUploadingFiles } from '@/components/layout'
 import { UseUploadFileType } from './useUploadFiles.types'
 import { useSelector } from 'react-redux'
@@ -8,11 +8,12 @@ import { RootState } from '@/context'
 
 export const useUploadFile = (uploadedFiles: UseUploadFileType[], setUploading: SetUploadingFiles) => {
   const adapter = useSelector((state: RootState) => state.utils.adapter)
-  console.log(adapter)
 
   const uplaod = useMutation({
     mutationKey: ['file'],
-    mutationFn: (file: UseUploadFileType) => StoreFile(file.file, adapter),
+    mutationFn: (file: UseUploadFileType) => {
+      return StoreFile(file.file, adapter)
+    },
   })
 
   const invoke = () => {

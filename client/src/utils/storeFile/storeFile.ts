@@ -1,4 +1,4 @@
-import { AttachmentType } from '@/components/ui'
+import { AttachmentType } from '@/components/layout'
 import { convertToBase64 } from '../base64'
 import axios from 'axios'
 import { toast } from 'sonner'
@@ -8,7 +8,7 @@ export type UploadRes = string | null
 export async function StoreFile(filedata: AttachmentType, adapter: string): Promise<UploadRes | null> {
   const { id, name, size, type } = filedata
   const base64File = await convertToBase64(filedata.file)
-  const token = JSON.parse(localStorage.get('token'))
+  const token = JSON.parse(localStorage.getItem('token'))
 
   try {
     //NOTE: make the req
