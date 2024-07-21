@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { ActionLog, AdapterService, DBService, S3Service } from '../../services'
+import { ActionLog, AdapterService, DBService } from '../../services'
 import {
   ListBlobsMetaDataType,
   StoreBlobBodyType
@@ -91,7 +91,6 @@ export class BlobController {
 
   async listBucketBlobs(req: Request, res: Response) {
     const { pageSize, page }: ListBlobsMetaDataType = req.query
-    console.log(pageSize, page)
 
     try {
       const blobs = await DBService.listBlobsMetaData({ pageSize, page })

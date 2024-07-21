@@ -7,6 +7,7 @@ import { ContextMenu, ContextMenuTrigger, Input } from '..'
 import { supportedFileTypes } from '@/constants'
 import { UploadFileSheetContentType, UploadFileSheetFooterProps } from './UploadFileSheetWrapper'
 import { Status } from '@/hooks'
+import { queryClient } from '@/main'
 
 export const UploadFileSheetContent = ({ uploadedFiles, setUploadedFiles }: UploadFileSheetContentType) => {
   return (
@@ -136,6 +137,7 @@ export const UploadFileSheetFooter = ({
           if (getStatusCheck('success')) {
             setUploadedFiles([])
             setState((prevState) => ({ ...prevState, sheet: false }))
+            queryClient.refetchQueries({ queryKey: ['files'] })
           } else {
             invoke()
           }
