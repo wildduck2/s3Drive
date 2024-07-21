@@ -4,7 +4,7 @@ import axios from 'axios'
 import { toast } from 'sonner'
 
 export async function DownloadFile({ id }: { id: string; adapter: string }) {
-  const token = JSON.parse(localStorage.getItem('token') || '')
+  const token = JSON.parse(localStorage.getItem('token')!) || ''
 
   try {
     //NOTE: make the req

@@ -4,7 +4,7 @@ import { QueryFunctionContext } from '@tanstack/react-query'
 
 export const retriveFiles = async ({ queryKey }: QueryFunctionContext) => {
   const [, { currentPage }] = queryKey as QueryKeyType
-  const token = JSON.parse(localStorage.getItem('token') || '')
+  const token = JSON.parse(localStorage.getItem('token')!) || ''
 
   try {
     const { data } = await axios.get<Awaited<Promise<{ error: string | null; data: RetriveFilesRes | null }>>>(

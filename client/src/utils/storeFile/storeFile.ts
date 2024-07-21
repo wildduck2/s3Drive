@@ -8,7 +8,7 @@ export type UploadRes = string | null
 export async function StoreFile(filedata: AttachmentType, adapter: string): Promise<UploadRes | null> {
   const { id, name, size, type } = filedata
   const base64File = await convertToBase64(filedata.file)
-  const token = JSON.parse(localStorage.getItem('token') || '')
+  const token = JSON.parse(localStorage.getItem('token')!) || ''
 
   try {
     //NOTE: make the req
