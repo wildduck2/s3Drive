@@ -12,9 +12,12 @@ app.use(bodyParser.urlencoded({ limit: '40mb', extended: false }))
 app.use(
   cors({
     origin: config.corsOrigin,
-    credentials: true
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+    optionsSuccessStatus: 204
   })
 )
+console.log(config.corsOrigin)
 
 app.use(blobRoutes)
 app.use(authRouter)
