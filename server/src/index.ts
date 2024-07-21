@@ -6,7 +6,20 @@ import cors from 'cors'
 import { PrismaClient } from '@prisma/client'
 
 //NOTE: init prisma client
-export const prisma = new PrismaClient()
+let prisma: PrismaClient
+
+if (process.env.NODE_ENV === 'production') {
+  prisma = new PrismaClient()
+} else {
+  // @ts-expect-error prisma
+  if (!global.prisma) {
+    // @ts-expect-error prisma
+    global.prisma = new PrismaClient()
+  }
+  // @ts-expect-error prisma
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  prisma = global.prisma
+}
 
 //NOTE: init the server
 export const app = express()
