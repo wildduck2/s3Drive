@@ -3,8 +3,9 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "build": "tsc && prisma generate",
+        "build": "prisma generate && tsc",
         "start": "nodemon --exec tsx ./src/index.ts && npm run format && npm run lint:fix",
+        "prisma:generate": "prisma generate",
         "test": "vitest"
     },
     "keywords": [],
