@@ -31,7 +31,7 @@ const resultMocked = {
   type: 'image/png',
   data: Buffer.from('testbase'),
   size: '123',
-  user_id: 'test_id'
+  user_id: 'test_user'
 }
 
 const mockBlob = {
@@ -58,12 +58,8 @@ describe('AmazonS3Adapter', () => {
       ;(axios as unknown as Mock).mockResolvedValue(null)
 
       const result = await s3Service.saveBlob({
-        id: 'test_id',
-        name: 'file.txt',
-        type: 'image/png',
-        data: 'testdata',
-        size: '123',
-        user_id: 'test_user'
+        ...resultMocked,
+        data: 'testbase'
       })
 
       expect(result).toBeNull()
@@ -74,12 +70,8 @@ describe('AmazonS3Adapter', () => {
       ;(axios as unknown as Mock).mockRejectedValue(null)
 
       const result = await s3Service.saveBlob({
-        id: 'test_id',
-        name: 'file.txt',
-        type: 'image/png',
-        data: 'testdata',
-        size: '123',
-        user_id: 'test_user'
+        ...resultMocked,
+        data: 'testbase'
       })
 
       expect(result).toBeNull()
@@ -93,12 +85,8 @@ describe('AmazonS3Adapter', () => {
       ;(DBService.saveBlobMetaData as Mock).mockResolvedValue(null)
 
       const result = await s3Service.saveBlob({
-        id: 'test_id',
-        name: 'file.txt',
-        type: 'image/png',
-        data: 'testdata',
-        size: '123',
-        user_id: 'test_user'
+        ...resultMocked,
+        data: 'testbase'
       })
 
       expect(result).toBeNull()
@@ -112,12 +100,8 @@ describe('AmazonS3Adapter', () => {
       ;(DBService.saveBlobMetaData as Mock).mockRejectedValue(null)
 
       const result = await s3Service.saveBlob({
-        id: 'test_id',
-        name: 'file.txt',
-        type: 'image/png',
-        data: 'testdata',
-        size: '123',
-        user_id: 'test_user'
+        ...resultMocked,
+        data: 'testbase'
       })
 
       expect(result).toBeNull()
@@ -131,12 +115,8 @@ describe('AmazonS3Adapter', () => {
       ;(DBService.saveBlobMetaData as Mock).mockResolvedValue(mockedMetaData)
 
       const result = await s3Service.saveBlob({
-        id: 'test_id',
-        name: 'file.txt',
-        type: 'image/png',
-        data: 'testdata',
-        size: '123',
-        user_id: 'test_user'
+        ...resultMocked,
+        data: 'testbase'
       })
 
       expect(result).toEqual(mockedMetaData)

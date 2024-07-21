@@ -35,7 +35,6 @@ export class AuthService {
       const isPasswordValid = user.password === password // await bcrypt.compare(password, user.password)
       if (!isPasswordValid) return null
 
-      console.log('hi')
       const token = this.generateToken(
         { user_id: user.id, email: user.email },
         jwtSecret
@@ -43,7 +42,6 @@ export class AuthService {
 
       return token
     } catch (error) {
-      console.log(error)
       return null
     }
   }

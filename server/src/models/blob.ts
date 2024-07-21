@@ -1,4 +1,4 @@
-import { StorageType } from '../services/uploadAdapter'
+import { StorageType } from '../services'
 
 export interface Blob {
   id: string
