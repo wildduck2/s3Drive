@@ -1,9 +1,7 @@
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
-  PaginationLink,
   PaginationNext,
   PaginationPrevious,
   Card,
@@ -26,14 +24,13 @@ import {
   Button,
   Badge,
   ScrollArea,
-  Skeleton,
 } from '@/components/ui'
 import { retriveFiles } from '@/utils'
 import { useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { filesize } from 'filesize'
 import { MoreHorizontal } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { UploadsTableContentProps, UploadsTablePaginationProps } from './UploadsTable.types'
 import { Icon } from '@/assets'
 
@@ -45,15 +42,13 @@ export function UploadsTable() {
     refetchOnWindowFocus: false,
   })
 
-  console.log('hi')
-
   return (
     <Card>
       <CardHeader>
         <CardTitle>File Uploaded</CardTitle>
         <CardDescription>Manage your Files and view their content or download them.</CardDescription>
       </CardHeader>
-      <CardContent className="h-[560px] w-[964px]">
+      <CardContent className="h-[560px] w-[1000px]">
         <ScrollArea className="h-[535px] border border-border border-solid rounded-md">
           <Table>
             <UploadsTableHeader />
@@ -61,7 +56,11 @@ export function UploadsTable() {
               <UploadsTableContent blobs={data.blobs} />
             ) : (
               <TableBody className="relative h-[446px]">
-                <Icon.spinner className="spinner absolute top-1/2 left-1/2" />
+                <TableRow>
+                  <TableCell>
+                    <Icon.spinner className="spinner absolute top-1/2 left-1/2" />
+                  </TableCell>
+                </TableRow>
               </TableBody>
             )}
           </Table>

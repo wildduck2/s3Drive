@@ -7,10 +7,23 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui'
+import { setAdapter } from '@/context'
+import { useCallback, useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 
 export const UploadAdapterPicker = () => {
+  const dispatch = useDispatch()
+
+  //NOTE: you could  use cookie  or anything else to get the prev value
+  useEffect(() => {
+    dispatch(setAdapter('AMAZON_S3'))
+  }, [])
+
   return (
-    <Select defaultValue="database">
+    <Select
+      defaultValue="AMAZON_S3"
+      onValueChange={(adapter) => dispatch(setAdapter(adapter))}
+    >
       <SelectTrigger className="w-[180px] border-solid">
         <SelectValue
           placeholder="Select a Adapter"
@@ -20,12 +33,20 @@ export const UploadAdapterPicker = () => {
       <SelectContent>
         <SelectGroup>
           <SelectLabel>Upload Adapter</SelectLabel>
-          <SelectItem value="awss3">AWS S3</SelectItem>
-          <SelectItem value="database">Database</SelectItem>
-          <SelectItem value="localstorage">LocalStorage</SelectItem>
-          <SelectItem value="ftp">FTP</SelectItem>
+          {adapters.map((adapter, idx) => {
+            return (
+              <SelectItem
+                value={adapter}
+                key={idx}
+              >
+                {adapter}
+              </SelectItem>
+            )
+          })}
         </SelectGroup>
       </SelectContent>
     </Select>
   )
 }
+
+const adapters = ['AMAZON_S3', 'DATABASE', 'LOCAL', 'FTP']
