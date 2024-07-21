@@ -1,5 +1,4 @@
-export type blobData = {
-  data: Buffer
+export type BlobData = {
   id: string
   size: string
   type: string
@@ -8,4 +7,5 @@ export type blobData = {
   blob_url: string
   blob_id: string | null
   createdAt: Date
+  data?: Buffer
 }

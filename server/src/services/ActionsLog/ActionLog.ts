@@ -23,8 +23,6 @@ export class ActionLog {
     blobs_id,
     action
   }: StoreActionType): Promise<DriverLog | null> {
-    console.log('hi')
-
     try {
       const record = await prisma.driverLog.create({
         data: {
@@ -37,8 +35,6 @@ export class ActionLog {
       if (!record) return null
       return record
     } catch (error) {
-      console.log(error)
-
       return null
     }
   }

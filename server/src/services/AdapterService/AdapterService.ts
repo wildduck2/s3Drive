@@ -1,5 +1,5 @@
 import { StorageService } from '../index.types'
-import { DBService, S3Service } from '../storage'
+import { DBService, LocalFileService, S3Service } from '../storage'
 
 export class AdapterService {
   adapter: StorageService
@@ -10,12 +10,16 @@ export class AdapterService {
 
   adapterPicker(adapter: StorageType) {
     switch (adapter) {
-      // case StorageType.DATABASE:
-      //   this.adapter = new DBService()
-      //   break
-
       case StorageType.AMAZON_S3:
         this.adapter = new S3Service()
+        break
+
+      case StorageType.DATABASE:
+        this.adapter = new DBService()
+        break
+
+      case StorageType.LOCAL:
+        this.adapter = new LocalFileService()
         break
 
       default:
@@ -30,5 +34,3 @@ export enum StorageType {
   LOCAL = 'LOCAL',
   FTP = 'FTP'
 }
-
-export const adapterService = new AdapterService(StorageType.AMAZON_S3)

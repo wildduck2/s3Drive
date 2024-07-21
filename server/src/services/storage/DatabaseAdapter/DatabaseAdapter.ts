@@ -1,8 +1,7 @@
-import { Blob, Blobs } from '@prisma/client'
-import { SaveBlob } from '../..'
+import { Blobs } from '@prisma/client'
+import { BlobData, SaveBlob } from '../..'
 import { prisma } from '../../..'
 import { StorageService } from '../../index.types'
-import { uuidv7 } from 'uuidv7'
 import {
   ListBlobsMetaDataType,
   PaginationType,
@@ -11,20 +10,33 @@ import {
 } from './DatabaseAdapter.types'
 
 export class DBService implements StorageService {
-  async saveBlob({ id, name, size, data }: SaveBlob): Promise<Blob | null> {
-    // console.log(id)
-
+  async saveBlob({
+    id,
+    name,
+    size,
+    type,
+    data,
+    user_id
+  }: SaveBlob): Promise<BlobData | null> {
     try {
-      const blob = await prisma.blob.create({
+      const blobData = await prisma.blob.create({
         data: {
           id,
-          size: size!,
-          data
+          data: Buffer.from(data, 'base64')
         }
       })
+      if (!blobData) return null
 
-      console.log(blob)
-
+      //NOTE: Save metadata to the database
+      const blob = await DBService.saveBlobMetaData({
+        id,
+        user_id,
+        type,
+        name,
+        size: size!,
+        blob_url: '',
+        blob_id: blobData.id
+      })
       if (!blob) return null
 
       return blob
@@ -33,28 +45,47 @@ export class DBService implements StorageService {
     }
   }
 
-  async getBlob(id: string): Promise<Buffer> {
-    // Implement DB retrieval logic
+  async getBlob({
+    id,
+    user_id
+  }: {
+    id: string
+    user_id: string
+  }): Promise<BlobData | null> {
+    try {
+      const blobMetaData = await DBService.retrievBlobMetaData({
+        id,
+        user_id
+      })
+      if (!blobMetaData) return null
+
+      const blobData = {
+        ...blobMetaData
+      }
+      return blobData
+    } catch (error) {
+      return null
+    }
   }
 
   static async saveBlobMetaData({
     id,
     user_id,
     blob_url,
+    blob_id,
     size,
     name,
     type
   }: saveBlobMetaDataType) {
-    console.log(user_id)
-
     try {
       const blob = await prisma.blobs.create({
         data: {
           id,
           name,
           type,
-          user_id,
           size,
+          user_id,
+          blob_id,
           blob_url
         }
       })
@@ -62,18 +93,33 @@ export class DBService implements StorageService {
 
       return blob
     } catch (error) {
-      console.log(error)
-
       return null
     }
   }
 
-  static async retrievBlobMetaData({ id, user_id }: RetrievBlobMetaDataType) {
+  static async retrievBlobMetaData({
+    id,
+    user_id
+  }: RetrievBlobMetaDataType): Promise<
+    | ({
+        Blob: {
+          data: Buffer
+        } | null
+      } & BlobData)
+    | null
+  > {
     try {
       const blob = await prisma.blobs.findUnique({
         where: {
           id,
           user_id
+        },
+        include: {
+          Blob: {
+            select: {
+              data: true
+            }
+          }
         }
       })
       if (!blob) return null
@@ -116,7 +162,6 @@ export class DBService implements StorageService {
         }
       }
     } catch (error) {
-      console.error(error)
       return null
     }
   }

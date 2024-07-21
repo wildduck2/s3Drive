@@ -1,9 +1,10 @@
 import axios from 'axios'
-import { blobData, DBService, SaveBlob, StorageService } from '../..'
+import { BlobData, DBService, SaveBlob, StorageService } from '../..'
 import { S3 } from '../../../utils/s3'
 import { supportedFileTypes } from '../../../constants'
 import { config } from '../../../config'
 import { Blobs } from '@prisma/client'
+import { blobRoutes } from '../../../routes'
 
 const s3 = {
   region: config.s3.region,
@@ -32,21 +33,18 @@ export class S3Service implements StorageService {
         name,
         id
       })
-      console.log(s3blobUrl)
-
       if (!s3blobUrl) return null
 
       //NOTE: Save metadata to the database
       const blob = await DBService.saveBlobMetaData({
         id,
         user_id,
+        blob_url: s3blobUrl,
+        blob_id: null,
         type,
         name,
-        size: size!,
-        blob_url: s3blobUrl
+        size: size!
       })
-      console.log(blob)
-
       if (!blob) return null
 
       return blob
@@ -61,7 +59,7 @@ export class S3Service implements StorageService {
   }: {
     id: string
     user_id: string
-  }): Promise<blobData | null> {
+  }): Promise<BlobData | null> {
     const blobMetaData = await DBService.retrievBlobMetaData({
       id,
       user_id
@@ -69,9 +67,9 @@ export class S3Service implements StorageService {
     if (!blobMetaData) return null
 
     //NOTE: getting the blob file
-    const data = await S3Service.getBlobBuffer({ id })
+    const data = await S3Service.getBlobBuffer({ id: id + blobMetaData.name })
 
-    const blobData: blobData = {
+    const blobData: BlobData = {
       ...blobMetaData,
       data: data
     }
@@ -107,7 +105,6 @@ export class S3Service implements StorageService {
     await axios(requestOptions)
 
     const publicUrl = `${config.s3.endPointUrl}/${config.s3.bucket}/${id + name}`
-    console.log(publicUrl)
 
     return publicUrl
   }
