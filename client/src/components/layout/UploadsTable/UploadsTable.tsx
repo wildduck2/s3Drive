@@ -25,8 +25,8 @@ import {
   Badge,
   ScrollArea,
 } from '@/components/ui'
-import { retriveFiles } from '@/utils'
-import { Mutation, useMutation, useQuery } from '@tanstack/react-query'
+import { DownloadFile, retriveFiles } from '@/utils'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { format } from 'date-fns'
 import { filesize } from 'filesize'
 import { MoreHorizontal } from 'lucide-react'
@@ -34,7 +34,6 @@ import { useRef, useState } from 'react'
 import { UploadsTableContentProps, UploadsTablePaginationProps } from './UploadsTable.types'
 import { Icon } from '@/assets'
 import { toast } from 'sonner'
-import axios from 'axios'
 import { useSelector } from 'react-redux'
 import { RootState } from '@/context'
 
@@ -60,7 +59,7 @@ export function UploadsTable() {
           <Table>
             <UploadsTableHeader />
             {status === 'success' && !isError ? (
-              <UploadsTableContent blobs={data?.blobs} />
+              <UploadsTableContent blobs={data?.blobs || []} />
             ) : (
               <TableBody className="relative h-[446px]">
                 <TableRow>
@@ -103,86 +102,67 @@ export const UploadsTableHeader = () => (
   </TableHeader>
 )
 
-export type DownLoadResponse = {}
-
-export async function DownloadFile({ id, adapter }: { id: string; adapter: string }): Promise<DownLoadResponse | null> {
-  const token = JSON.parse(localStorage.getItem('token'))
-
-  console.log(id)
-
-  try {
-    //NOTE: make the req
-    const { data } = await axios.get<Awaited<Promise<DownLoadResponse>>>(`${process.env.ROOT_URL}/v1/blobs/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-
-    if (!data) return null
-
-    return data
-  } catch (error) {
-    toast.error('failed to upload the file')
-    return null
-  }
-}
-
 export const UploadsTableContent = ({ blobs }: UploadsTableContentProps) => {
   const adapter = useSelector((state: RootState) => state.utils.adapter)
-  const downloadFileRef = useRef<string>(null)
+  const downloadFileRef = useRef<string>('')
+
   const { mutateAsync } = useMutation({
     mutationKey: ['download'],
-    mutationFn: () => DownloadFile({ id: downloadFileRef.current, adapter }),
+    mutationFn: () => DownloadFile({ id: downloadFileRef.current!, adapter }),
   })
   return blobs?.length ? (
     <TableBody>
-      {blobs.map((blob) => (
-        <TableRow key={blob.id}>
-          <TableCell className="hidden sm:table-cell w-[100px]">
-            <img
-              alt={blob.name}
-              src={blob.blob_url}
-              className="aspect-square rounded-md object-cover"
-              height="64"
-              width="64"
-            />
-          </TableCell>
-          <TableCell className="font-medium truncate max-w-[200px] w-[200px] ">{blob.name}</TableCell>
-          <TableCell className="hidden md:table-cell w-[81px]">
-            <Badge variant="outline">{blob.type.split('/')[1]}</Badge>
-          </TableCell>
-          <TableCell className="hidden md:table-cell w-[81px]">{filesize(+blob.size, { round: 0 })}</TableCell>
-          <TableCell className="hidden md:table-cell w-[200px]">{format(new Date(blob.createdAt), 'PPpp')}</TableCell>
-          <TableCell>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  aria-haspopup="true"
-                  size="icon"
-                  variant="ghost"
-                >
-                  <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">Toggle menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem onClick={comminSoon}>Edit</DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    downloadFileRef.current = blob.id
-                    mutateAsync()
-                  }}
-                >
-                  Download
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={comminSoon}>Share</DropdownMenuItem>
-                <DropdownMenuItem onClick={comminSoon}>Delete</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </TableCell>
-        </TableRow>
-      ))}
+      {blobs &&
+        blobs.map((blob) => (
+          <TableRow key={blob?.id}>
+            <TableCell className="hidden sm:table-cell w-[100px]">
+              <img
+                alt={blob?.name}
+                src={blob?.blob_url}
+                className="aspect-square rounded-md object-cover"
+                height="64"
+                width="64"
+              />
+            </TableCell>
+            <TableCell className="font-medium truncate max-w-[200px] w-[200px] ">{blob?.name}</TableCell>
+            <TableCell className="hidden md:table-cell w-[81px]">
+              <Badge variant="outline">{blob?.type.split('/')[1]}</Badge>
+            </TableCell>
+            <TableCell className="hidden md:table-cell w-[81px]">{filesize(+blob!.size || 0, { round: 0 })}</TableCell>
+            <TableCell className="hidden md:table-cell w-[200px]">
+              {format(new Date(blob!.createdAt), 'PPpp')}
+            </TableCell>
+            <TableCell>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    aria-haspopup="true"
+                    size="icon"
+                    variant="ghost"
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                    <span className="sr-only">Toggle menu</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuItem onClick={comminSoon}>Edit</DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      const id = blob!.id
+                      downloadFileRef.current = id
+                      mutateAsync()
+                    }}
+                  >
+                    Download
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={comminSoon}>Share</DropdownMenuItem>
+                  <DropdownMenuItem onClick={comminSoon}>Delete</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </TableCell>
+          </TableRow>
+        ))}
     </TableBody>
   ) : (
     <TableBody>

@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import { AdapterAction, AdapterState, initialStateTypes } from './Utils.types'
 
 const initialState: initialStateTypes = {
-  adapter: null,
+  adapter: '',
 }
 
 export const utilsSlice = createSlice({

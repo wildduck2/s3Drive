@@ -1,4 +1,5 @@
-import { SetUploadingFiles, Status } from '@/components/layout'
+import { SetUploadingFiles } from '@/components/layout'
+import { Status } from '@/hooks'
 
 export type SetStateType = {
   setState: SetUploadingFiles

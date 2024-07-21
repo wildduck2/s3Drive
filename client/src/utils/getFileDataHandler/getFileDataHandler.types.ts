@@ -1,7 +1,7 @@
-import { SetUploading, UploadedFilesType } from '@/hooks'
+import { UseUploadFileType } from '@/hooks'
 
 export type GetFileDataHandlerType = {
   e: React.ChangeEvent<HTMLInputElement>
-  uploadedFiles: UploadedFilesType[]
-  setUploadedFiles: SetUploading
+  uploadedFiles: UseUploadFileType[]
+  setUploadedFiles: React.Dispatch<React.SetStateAction<UseUploadFileType[]>>
 }

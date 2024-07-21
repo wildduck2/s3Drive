@@ -1,5 +1,5 @@
 import { StrictMode } from 'react'
-import ReactDOM from 'react-dom/client'
+import { createRoot } from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import './scss/styles.scss'
 
@@ -19,10 +19,9 @@ declare module '@tanstack/react-router' {
 
 export const queryClient = new QueryClient()
 
-const rootElement = document.getElementById('root')!
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement)
-  root.render(
+createRoot(document.getElementById('root')!).render(
+  <>
+    root.render(
     <StrictMode>
       <Provider store={store}>
         <QueryClientProvider client={queryClient}>
@@ -30,6 +29,7 @@ if (!rootElement.innerHTML) {
           <Toaster position="top-center" />
         </QueryClientProvider>
       </Provider>
-    </StrictMode>,
-  )
-}
+    </StrictMode>
+    , )
+  </>,
+)
