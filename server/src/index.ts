@@ -3,9 +3,10 @@ import { authRouter, blobRoutes } from './routes'
 import bodyParser from 'body-parser'
 import { config } from './config'
 import cors from 'cors'
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient } from '../prisma/generated/client'
 
 //NOTE: init prisma client
+
 let prisma: PrismaClient
 
 if (process.env.NODE_ENV === 'production') {
@@ -17,9 +18,10 @@ if (process.env.NODE_ENV === 'production') {
     global.prisma = new PrismaClient()
   }
   // @ts-expect-error prisma
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   prisma = global.prisma
 }
+
+export default prisma
 
 //NOTE: init the server
 export const app = express()
