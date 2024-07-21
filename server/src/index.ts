@@ -11,7 +11,7 @@ app.use(bodyParser.json({ limit: '40mb' }))
 app.use(bodyParser.urlencoded({ limit: '40mb', extended: false }))
 app.use(
   cors({
-    origin: config.corsOrigin,
+    origin: 'https://upload-thing-theta.vercel.app',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     optionsSuccessStatus: 204
