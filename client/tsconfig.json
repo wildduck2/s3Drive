@@ -34,9 +34,7 @@
         ]
     },
     "include": [
-        "src",
-        "**/*.ts",
-        "**/*.tsx"
+        "src"
     ],
     "references": [
         {
