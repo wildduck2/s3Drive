@@ -5,7 +5,7 @@
     "scripts": {
         "build": "prisma generate && tsc",
         "start": "nodemon --exec tsx ./src/index.ts && npm run format && npm run lint:fix",
-        "prisma:generate": "prisma generate",
+        "postinstall": "prisma generate",
         "test": "vitest"
     },
     "keywords": [],
