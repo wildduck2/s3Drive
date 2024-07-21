@@ -1,8 +1,8 @@
+"use strict";
 // import { Blobs } from '@prisma/client'
 // import { SaveBlob } from '../../AdapterService'
 // import { StorageService } from '../../index.types'
 // import { BlobData } from '../AmazonS3Adapter'
-
 // export class FTPService implements StorageService {
 //   getBlob({
 //     id,

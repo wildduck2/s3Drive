@@ -90,6 +90,7 @@ export class BlobController {
   }
 
   async listBucketBlobs(req: Request, res: Response) {
+    // @ts-expect-error-error query
     const { pageSize, page }: ListBlobsMetaDataType = req.query
 
     try {

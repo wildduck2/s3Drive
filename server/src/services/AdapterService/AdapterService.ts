@@ -1,10 +1,5 @@
 import { StorageService } from '../index.types'
-import {
-  DBService,
-  FTPService,
-  LocalFileService,
-  AmazonS3Adapter
-} from '../storage'
+import { DBService, LocalFileService, AmazonS3Adapter } from '../storage'
 
 /**
  * `AdapterService` class is responsible for selecting and initializing
@@ -19,7 +14,14 @@ export class AdapterService {
    * The selected storage adapter instance.
    * Implements the `StorageService` interface.
    */
+  // @ts-expect-error-error adapter
   adapter: StorageService
+  /**
+   * Creates an instance of `AdapterService`.
+   * Initializes the appropriate storage adapter based on the provided storage type.
+   *
+   * @param adapter - The type of storage adapter to initialize. Must be one of the `StorageType` enum values.
+   */
 
   /**
    * Creates an instance of `AdapterService`.
@@ -50,9 +52,9 @@ export class AdapterService {
         this.adapter = new LocalFileService()
         break
 
-      case StorageType.FTP:
-        this.adapter = new FTPService()
-        break
+      // case StorageType.FTP:
+      //   this.adapter = new FTPService()
+      //   break
 
       default:
         throw new Error(`Unsupported storage type: ${adapter}`)

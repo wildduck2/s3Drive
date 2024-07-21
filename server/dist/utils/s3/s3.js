@@ -1,0 +1,100 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.S3 = void 0;
+const crypto_1 = __importDefault(require("crypto"));
+/**
+ * A class for interacting with AWS S3 using Signature Version 4 (SigV4) for signing requests.
+ */
+class S3 {
+    /**
+     * Generates a signed URL for making authenticated requests to AWS S3.
+     *
+     * @param request - The request options including method, URL, headers, and data.
+     * @param credentials - AWS credentials including access key, secret access key, and region.
+     * @returns A promise that resolves to the signed URL if successful, or null if an error occurs.
+     */
+    static async getSignedURL(request, { accessKey, secretAccessKey, region }) {
+        const { method, url, headers, data } = request;
+        // Generate AWS date and date stamp
+        const amzDate = new Date().toISOString().replace(/[:\-]|\.\d{3}/g, '');
+        const dateStamp = amzDate.substring(0, 8);
+        // Update headers with AWS-specific headers
+        // @ts-ignore-error header
+        headers['x-amz-date'] = amzDate;
+        // @ts-ignore-error header
+        headers['x-amz-content-sha256'] = crypto_1.default
+            .createHash('sha256')
+            .update(data || '')
+            .digest('hex');
+        // Construct canonical headers and request
+        const canonicalHeaders = Object.keys(headers)
+            .sort()
+            // @ts-ignore-error header
+            .map((key) => `${key.toLowerCase()}:${headers[key]}`)
+            .join('\n');
+        const signedHeaders = Object.keys(headers)
+            .sort()
+            .map((key) => key.toLowerCase())
+            .join(';');
+        const canonicalRequest = [
+            method,
+            new URL(url).pathname,
+            new URL(url).search,
+            canonicalHeaders + '\n',
+            signedHeaders,
+            // @ts-ignore-error header
+            headers['x-amz-content-sha256']
+        ].join('\n');
+        // Generate string to sign
+        const algorithm = 'AWS4-HMAC-SHA256';
+        const credentialScope = `${dateStamp}/${region}/s3/aws4_request`;
+        const stringToSign = [
+            algorithm,
+            amzDate,
+            credentialScope,
+            crypto_1.default.createHash('sha256').update(canonicalRequest).digest('hex')
+        ].join('\n');
+        // Generate signing key and signature
+        const signingKey = this.getSignatureKey(secretAccessKey, dateStamp, region, 's3');
+        const signature = crypto_1.default
+            .createHmac('sha256', signingKey)
+            .update(stringToSign)
+            .digest('hex');
+        // Set the Authorization header
+        // @ts-ignore-error header
+        headers['Authorization'] =
+            `${algorithm} Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`;
+        // Construct the signed URL
+        const encodedCredentialScope = encodeURIComponent(credentialScope);
+        const encodedSignedHeaders = encodeURIComponent(signedHeaders);
+        const encodedSignature = encodeURIComponent(signature);
+        const signedUrl = `${url}?X-Amz-Algorithm=${algorithm}&X-Amz-Credential=${encodeURIComponent(accessKey)}%2F${encodedCredentialScope}&X-Amz-Date=${amzDate}&X-Amz-Expires=86400&X-Amz-SignedHeaders=${encodedSignedHeaders}&X-Amz-Signature=${encodedSignature}`;
+        return signedUrl;
+    }
+    /**
+     * Generates the HMAC-SHA256 signing key for AWS Signature Version 4.
+     *
+     * @param key - The AWS secret access key.
+     * @param date - The date stamp in `YYYYMMDD` format.
+     * @param region - The AWS region.
+     * @param service - The AWS service name (e.g., 's3').
+     * @returns The HMAC-SHA256 signing key as a Buffer.
+     */
+    static getSignatureKey(key, date, region, service) {
+        //NOTE: Key Derivation
+        const kDate = crypto_1.default
+            .createHmac('sha256', 'AWS4' + key)
+            .update(date)
+            .digest();
+        const kRegion = crypto_1.default.createHmac('sha256', kDate).update(region).digest();
+        const kService = crypto_1.default
+            .createHmac('sha256', kRegion)
+            .update(service)
+            .digest();
+        return crypto_1.default.createHmac('sha256', kService).update('aws4_request').digest();
+    }
+}
+exports.S3 = S3;
