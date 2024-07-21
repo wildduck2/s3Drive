@@ -11,7 +11,7 @@ app.use(bodyParser.json({ limit: '40mb' }))
 app.use(bodyParser.urlencoded({ limit: '40mb', extended: false }))
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: 'http://localhost:4173',
     credentials: true
   })
 )
