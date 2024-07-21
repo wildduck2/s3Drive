@@ -8,10 +8,12 @@ export type UploadRes = string | null
 export async function StoreFile(filedata: AttachmentType, adapter: string): Promise<UploadRes | null> {
   const { id, name, size, type } = filedata
   const base64File = await convertToBase64(filedata.file)
+  const token = JSON.parse(localStorage.get('token'))
+
   try {
     //NOTE: make the req
     const { data } = await axios.put<Awaited<Promise<UploadRes>>>(
-      `http://localhost:3000/v1/blobs`,
+      `${process.env.ROOT_URL}/v1/blobs`,
       {
         id,
         name,
@@ -22,7 +24,7 @@ export async function StoreFile(filedata: AttachmentType, adapter: string): Prom
       },
       {
         headers: {
-          Authorization: `Bearer your-secret-token`,
+          Authorization: `Bearer ${token}`,
         },
       },
     )

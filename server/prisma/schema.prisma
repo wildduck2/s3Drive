@@ -15,7 +15,6 @@ datasource db {
 
 model User {
     id             String      @id @default(uuid()) @db.Char(36)
-    user_name      String      @unique
     email          String      @unique
     password       String
     verified_email Boolean?
@@ -25,7 +24,7 @@ model User {
     Session        Session?
     Otp            Otp?
 
-    @@index([user_name, email], map: "user")
+    @@index([email], map: "user")
 }
 
 model Blobs {

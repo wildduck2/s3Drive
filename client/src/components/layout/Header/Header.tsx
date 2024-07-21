@@ -10,8 +10,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui'
+import { useNavigate } from '@tanstack/react-router'
 
 export const Header = () => {
+  const route = useNavigate()
   return (
     <header className="flex items-center justify-end px-7 py-9">
       <DropdownMenu>
@@ -32,7 +34,14 @@ export const Header = () => {
         <DropdownMenuContent className="w-56">
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuCheckboxItem>Logout</DropdownMenuCheckboxItem>
+          <DropdownMenuCheckboxItem
+            onClick={() => {
+              localStorage.removeItem('token')
+              route({ to: '/login' })
+            }}
+          >
+            Logout
+          </DropdownMenuCheckboxItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </header>

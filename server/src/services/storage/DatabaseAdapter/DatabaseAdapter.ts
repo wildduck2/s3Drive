@@ -30,7 +30,7 @@ export class DBService implements StorageService {
       //NOTE: Save metadata to the database
       const blob = await DBService.saveBlobMetaData({
         id,
-        user_id,
+        user_id: user_id as string,
         type,
         name,
         size: size!,

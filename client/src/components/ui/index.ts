@@ -15,6 +15,7 @@ export * from './Pagination'
 export * from './ScrollArea'
 export * from './Skeleton'
 export * from './Select'
+export * from './Label'
 
 //NOTE: Mine
 export * from './UploadFileSheetWrapper'

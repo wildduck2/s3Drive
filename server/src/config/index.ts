@@ -4,6 +4,7 @@ dotenv.config()
 
 export const config = {
   port: process.env.PORT || 3000,
+  jwtSecret: process.env.NEXT_PUBLIC_JWT_SECRET || '',
   db: {
     url: process.env.DATABASE_URL || ''
   },

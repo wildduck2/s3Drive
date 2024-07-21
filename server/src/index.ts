@@ -1,5 +1,5 @@
 import express from 'express'
-import { blobRoutes } from './routes'
+import { authRouter, blobRoutes } from './routes'
 import bodyParser from 'body-parser'
 import { config } from './config'
 import cors from 'cors'
@@ -23,6 +23,7 @@ app.use(
 )
 
 app.use(blobRoutes)
+app.use(authRouter)
 
 app.listen(config.port, () =>
   console.log(`server is running on port: ${config.port}`)

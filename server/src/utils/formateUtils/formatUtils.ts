@@ -33,7 +33,11 @@ export class FormatUtils {
    * @returns `true` if the string is valid Base64 encoded data, `false` otherwise.
    */
   static isBase64(data: string): boolean {
-    return btoa(atob(data)) === data
+    try {
+      return btoa(atob(data)) === data
+    } catch (error) {
+      return false
+    }
   }
 
   /**

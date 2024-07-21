@@ -4,9 +4,8 @@ import { S3 } from '../../../utils/s3'
 import { supportedFileTypes } from '../../../constants'
 import { config } from '../../../config'
 import { Blobs } from '@prisma/client'
-import { blobRoutes } from '../../../routes'
 
-const s3 = {
+export const s3 = {
   region: config.s3.region,
   endPoint: config.s3.endPoint,
   bucket: config.s3.bucket,
@@ -16,7 +15,7 @@ const s3 = {
 
 const s3Endpoint = `${config.s3.endPoint}/${config.s3.bucket}`
 
-export class S3Service implements StorageService {
+export class AmazonS3Adapter implements StorageService {
   async saveBlob({
     id,
     name,
@@ -26,7 +25,7 @@ export class S3Service implements StorageService {
     user_id
   }: SaveBlob): Promise<Blobs | null> {
     try {
-      const s3blobUrl = await S3Service.uploadBlobToS3({
+      const s3blobUrl = await AmazonS3Adapter.uploadBlobToS3({
         user_id,
         data,
         type,
@@ -38,7 +37,7 @@ export class S3Service implements StorageService {
       //NOTE: Save metadata to the database
       const blob = await DBService.saveBlobMetaData({
         id,
-        user_id,
+        user_id: user_id as string,
         blob_url: s3blobUrl,
         blob_id: null,
         type,
@@ -60,21 +59,28 @@ export class S3Service implements StorageService {
     id: string
     user_id: string
   }): Promise<BlobData | null> {
-    const blobMetaData = await DBService.retrievBlobMetaData({
-      id,
-      user_id
-    })
-    if (!blobMetaData) return null
+    try {
+      const blobMetaData = await DBService.retrievBlobMetaData({
+        id,
+        user_id
+      })
+      if (!blobMetaData) return null
 
-    //NOTE: getting the blob file
-    const data = await S3Service.getBlobBuffer({ id: id + blobMetaData.name })
+      //NOTE: getting the blob file
+      const data = await AmazonS3Adapter.getBlobBuffer({
+        id: id + blobMetaData.name
+      })
+      if (!data) return null
 
-    const blobData: BlobData = {
-      ...blobMetaData,
-      data: data
+      const blobData: BlobData = {
+        ...blobMetaData,
+        data: data
+      }
+
+      return blobData
+    } catch (error) {
+      return null
     }
-
-    return blobData
   }
 
   static async uploadBlobToS3({
@@ -83,47 +89,56 @@ export class S3Service implements StorageService {
     type,
     data
   }: SaveBlob): Promise<string | null> {
-    //NOTE: uplaoding the file to the s3
-    if (!supportedFileTypes.includes(type)) return null
+    try {
+      if (!supportedFileTypes.includes(type)) return null
 
-    const buffer = Buffer.from(data, 'base64')
-    const key = id + name
+      const buffer = Buffer.from(data, 'base64')
+      const key = id + name
 
-    const requestOptions = {
-      method: 'PUT',
-      url: `${s3Endpoint}/${key}`,
-      headers: {
-        'Content-Type': 'application/octet-stream',
-        'Content-Length': buffer.length,
-        Host: new URL(config.s3.endPoint).hostname
-      },
-      data: buffer
+      const requestOptions = {
+        method: 'PUT',
+        url: `${s3Endpoint}/${key}`,
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          'Content-Length': buffer.length,
+          Host: new URL(config.s3.endPoint).hostname
+        },
+        data: buffer
+      }
+
+      const url = await S3.getSignedURL(requestOptions, s3)
+      if (!url) return null
+
+      await axios(requestOptions)
+
+      const publicUrl = `${config.s3.endPointUrl}/${config.s3.bucket}/${id + name}`
+
+      return publicUrl
+    } catch (error) {
+      return null
     }
-
-    await S3.getSignedURL(requestOptions, s3)
-
-    await axios(requestOptions)
-
-    const publicUrl = `${config.s3.endPointUrl}/${config.s3.bucket}/${id + name}`
-
-    return publicUrl
   }
 
-  static async getBlobBuffer({ id }: { id: string }) {
-    const key = id
-    const requestOptions = {
-      method: 'GET',
-      url: `${s3Endpoint}/${key}`,
-      headers: {
-        Host: new URL(config.s3.endPoint).hostname
+  static async getBlobBuffer({ id }: { id: string }): Promise<Buffer | null> {
+    try {
+      const key = id
+      const requestOptions = {
+        method: 'GET',
+        url: `${s3Endpoint}/${key}`,
+        headers: {
+          Host: new URL(config.s3.endPoint).hostname
+        }
       }
+
+      const url = await S3.getSignedURL(requestOptions, s3)
+      if (!url) return null
+
+      const response = await axios(requestOptions)
+      const data = Buffer.from(response.data, 'base64')
+
+      return data
+    } catch (error) {
+      return null
     }
-
-    await S3.getSignedURL(requestOptions, s3)
-
-    const response = await axios(requestOptions)
-    const data = Buffer.from(response.data)
-
-    return data
   }
 }
