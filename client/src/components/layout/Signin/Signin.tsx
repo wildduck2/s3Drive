@@ -11,7 +11,7 @@ import {
 } from '@/components/ui'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { LoginFormInputs } from './Signin.types'
-import { useSignin } from '@/hooks'
+import { useSignin } from '@/hooks/auth/useSignin'
 
 export function LoginForm() {
   const {

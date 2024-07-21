@@ -61,8 +61,6 @@ export class BlobController {
   async retrieveBlob(req: Request, res: Response) {
     const { id } = req.params
 
-    console.log(id)
-
     try {
       //NOTE: getting metadata
       const blobMetaData = await this.storageService.adapter.getBlob({

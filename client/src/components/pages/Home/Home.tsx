@@ -1,4 +1,5 @@
-import { Header, Upload, UploadAdapterPicker, UploadsTable } from '@/components/layout'
+import { Header, Upload } from '@/components/layout'
+import { UploadAdapterPicker, UploadsTable } from '@/components/ui'
 
 export const Index = () => {
   return (

@@ -1,4 +1,4 @@
-import { blobMetaData } from '@/components/layout'
+import { blobMetaData } from '@/components/ui'
 
 export type PaginationType = {
   page: number

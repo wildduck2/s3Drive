@@ -5,7 +5,6 @@ export const Route = createFileRoute('/')({
   component: () => {
     const token = JSON.parse(localStorage.getItem('token') || '')
     const router = useNavigate()
-
     if (token) {
       return <Index />
     }

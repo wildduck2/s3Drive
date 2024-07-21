@@ -49,4 +49,4 @@ export const UploadAdapterPicker = () => {
   )
 }
 
-const adapters = ['AMAZON_S3', 'DATABASE', 'LOCAL', 'FTP']
+export const adapters = ['AMAZON_S3', 'DATABASE', 'LOCAL', 'FTP']
