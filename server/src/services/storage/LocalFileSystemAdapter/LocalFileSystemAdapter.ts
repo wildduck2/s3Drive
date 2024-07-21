@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
-import { Blobs } from '@prisma/client'
 import { BlobData, DBService, SaveBlob, StorageService } from '../..'
+import { Blobs } from '../../../../prisma/generated/client'
 
 /**
  * `LocalFileService` class implements the `StorageService` interface for managing blobs

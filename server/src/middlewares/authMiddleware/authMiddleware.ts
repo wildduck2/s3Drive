@@ -1,5 +1,4 @@
 import { Request, Response, NextFunction } from 'express'
-import { prisma } from '../..'
 import { AuthService } from '../../services'
 import { config } from '../../config'
 

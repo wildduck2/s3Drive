@@ -2,7 +2,6 @@ import { describe, it, expect, vi, Mock, beforeEach } from 'vitest'
 import axios from 'axios'
 import { AmazonS3Adapter } from '../AmazonS3Adapter' // Adjust the import path
 import { DBService } from '../..' // Adjust the import path
-import { supportedFileTypes } from '../../../constants' // Adjust the import path
 import { S3 } from '../../../../utils/s3'
 
 // Mock the dependencies

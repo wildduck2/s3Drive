@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, Mock } from 'vitest'
 import { ActionLog } from '../ActionLog' // Adjust the import path
 import { DriverLog } from '@prisma/client'
-import { prisma } from '../../..'
+import { prisma } from '../../../utils/prisma'
 
 // Mock the Prisma client
 vi.mock('../../..', () => ({

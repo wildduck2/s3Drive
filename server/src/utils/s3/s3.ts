@@ -27,9 +27,9 @@ export class S3 {
     const dateStamp = amzDate.substring(0, 8)
 
     // Update headers with AWS-specific headers
-    // @ts-ignore-error header
+    // @ts-expect-error header
     headers['x-amz-date'] = amzDate
-    // @ts-ignore-error header
+    // @ts-expect-error header
     headers['x-amz-content-sha256'] = crypto
       .createHash('sha256')
       .update(data || '')
@@ -38,7 +38,7 @@ export class S3 {
     // Construct canonical headers and request
     const canonicalHeaders = Object.keys(headers)
       .sort()
-      // @ts-ignore-error header
+      // @ts-expect-error header
       .map((key) => `${key.toLowerCase()}:${headers[key]}`)
       .join('\n')
 
@@ -53,7 +53,7 @@ export class S3 {
       new URL(url).search,
       canonicalHeaders + '\n',
       signedHeaders,
-      // @ts-ignore-error header
+      // @ts-expect-error header
       headers['x-amz-content-sha256']
     ].join('\n')
 
@@ -80,7 +80,7 @@ export class S3 {
       .digest('hex')
 
     // Set the Authorization header
-    // @ts-ignore-error header
+    // @ts-expect-error header
     headers['Authorization'] =
       `${algorithm} Credential=${accessKey}/${credentialScope}, SignedHeaders=${signedHeaders}, Signature=${signature}`
 

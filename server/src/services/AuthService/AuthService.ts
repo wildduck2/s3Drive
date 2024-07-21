@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken'
-import { prisma } from '../..'
+import { prisma } from '../../utils/prisma';
 
 export class AuthService {
   static generateToken(

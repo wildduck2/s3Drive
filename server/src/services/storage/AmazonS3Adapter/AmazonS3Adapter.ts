@@ -3,7 +3,7 @@ import { BlobData, DBService, SaveBlob, StorageService } from '../..'
 import { S3 } from '../../../utils/s3'
 import { supportedFileTypes } from '../../../constants'
 import { config } from '../../../config'
-import { Blobs } from '@prisma/client'
+import { Blobs } from '../../../../prisma/generated/client'
 
 /**
  * Configuration object for S3.

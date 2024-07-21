@@ -1,6 +1,6 @@
 import { DriverLog } from '@prisma/client'
 import { StoreActionType } from '..'
-import { prisma } from '../..'
+import { prisma } from '../../utils/prisma'
 
 /**
  * ActionLog Class
