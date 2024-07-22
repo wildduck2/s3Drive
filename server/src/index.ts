@@ -12,7 +12,7 @@ app.use(bodyParser.urlencoded({ limit: '40mb', extended: false }))
 app.use(
     cors({
         origin: config.corsOrigin,
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
         credentials: true,
         optionsSuccessStatus: 204
     })

@@ -4,7 +4,7 @@ import { prisma } from '../../../../utils'
 import { SaveBlob } from '../../../AdapterService'
 
 // Mocking prisma
-vi.mock('../../../..', () => ({
+vi.mock('../../../../utils', () => ({
     prisma: {
         blob: {
             create: vi.fn()

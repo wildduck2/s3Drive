@@ -1,5 +1,5 @@
 import * as fs from 'fs'
-import * as path from 'path'
+import path from 'path'
 import { Mock, describe, expect, it, vi } from 'vitest'
 import { SaveBlob } from '../../../AdapterService'
 import { LocalFileService } from '../LocalFileSystemAdapter'
