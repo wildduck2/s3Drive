@@ -12,9 +12,9 @@ app.use(bodyParser.urlencoded({ limit: '40mb', extended: false }))
 app.use(
   cors({
     origin: 'https://upload-thing-theta.vercel.app',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,
-    optionsSuccessStatus: 204
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    credentials: true
   })
 )
 console.log(config.corsOrigin)
