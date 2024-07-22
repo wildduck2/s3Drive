@@ -10,6 +10,8 @@ dotenv_1.default.config();
 exports.config = {
     // Port on which the application will run
     port: process.env.PORT || 3000,
+    // CORS ORIGIN
+    corsOrigin: process.env.CORS_ORIGIN || '',
     // Secret key for JWT (JSON Web Tokens)
     jwtSecret: process.env.NEXT_PUBLIC_JWT_SECRET || '',
     // Database configuration

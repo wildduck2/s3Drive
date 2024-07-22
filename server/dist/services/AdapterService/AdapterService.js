@@ -52,7 +52,7 @@ class AdapterService {
             //   this.adapter = new FTPService()
             //   break
             default:
-                throw new Error(`Unsupported storage type: ${adapter}`);
+                break;
         }
     }
 }

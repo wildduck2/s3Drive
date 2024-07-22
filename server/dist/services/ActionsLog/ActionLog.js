@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ActionLog = void 0;
-const __1 = require("../..");
+const prisma_1 = require("../../utils/prisma");
 /**
  * ActionLog Class
  *
@@ -20,7 +20,7 @@ class ActionLog {
      */
     static async storeAction({ user_id, blobs_id, action }) {
         try {
-            const record = await __1.prisma.driverLog.create({
+            const record = await prisma_1.prisma.driverLog.create({
                 data: {
                     blobs_id,
                     user_id,

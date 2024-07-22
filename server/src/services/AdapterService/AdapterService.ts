@@ -15,7 +15,7 @@ export class AdapterService {
      * Implements the `StorageService` interface.
      */
     // @ts-expect-error-error adapter
-    adapter: StorageService | null
+    adapter: StorageService
     /**
      * Creates an instance of `AdapterService`.
      * Initializes the appropriate storage adapter based on the provided storage type.

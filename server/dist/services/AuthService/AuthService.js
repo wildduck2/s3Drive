@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const __1 = require("../..");
+const prisma_1 = require("../../utils/prisma");
 class AuthService {
     static generateToken(payload, jwtSecret) {
         try {
@@ -20,7 +20,7 @@ class AuthService {
     }
     static async signIn({ jwtSecret, email, password }) {
         try {
-            const user = await __1.prisma.user.findUnique({
+            const user = await prisma_1.prisma.user.findUnique({
                 where: { email }
             });
             if (!user)

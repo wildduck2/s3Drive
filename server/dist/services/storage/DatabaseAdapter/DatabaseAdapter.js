@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DBService = void 0;
-const __1 = require("../../..");
+const utils_1 = require("../../../utils");
 /**
  * `DBService` class implements the `StorageService` interface for database operations related
  * to blobs and their metadata. It uses Prisma to interact with the database.
@@ -22,7 +22,7 @@ class DBService {
     async saveBlob({ id, name, size, type, data, user_id }) {
         try {
             // Save the blob data to the database
-            const blobData = await __1.prisma.blob.create({
+            const blobData = await utils_1.prisma.blob.create({
                 data: {
                     id,
                     data: Buffer.from(data, 'base64')
@@ -91,7 +91,7 @@ class DBService {
     static async saveBlobMetaData({ id, user_id, blob_url, blob_id, size, name, type }) {
         try {
             // Save blob metadata to the database
-            const blob = await __1.prisma.blobs.create({
+            const blob = await utils_1.prisma.blobs.create({
                 data: {
                     id,
                     name,
@@ -121,7 +121,7 @@ class DBService {
     static async retrievBlobMetaData({ id, user_id }) {
         try {
             // Retrieve blob metadata from the database
-            const blob = await __1.prisma.blobs.findUnique({
+            const blob = await utils_1.prisma.blobs.findUnique({
                 where: {
                     id,
                     user_id
@@ -153,14 +153,14 @@ class DBService {
     static async listBlobsMetaData({ page, pageSize }) {
         try {
             const skip = (+page - 1) * +pageSize;
-            const blobs = await __1.prisma.blobs.findMany({
+            const blobs = await utils_1.prisma.blobs.findMany({
                 skip: skip,
                 take: +pageSize,
                 orderBy: {
                     createdAt: 'desc'
                 }
             });
-            const totalCount = await __1.prisma.blobs.count();
+            const totalCount = await utils_1.prisma.blobs.count();
             const totalPages = Math.ceil(totalCount / +pageSize);
             return {
                 blobs,

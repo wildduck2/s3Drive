@@ -14,9 +14,12 @@ exports.app = (0, express_1.default)();
 exports.app.use(body_parser_1.default.json({ limit: '40mb' }));
 exports.app.use(body_parser_1.default.urlencoded({ limit: '40mb', extended: false }));
 exports.app.use((0, cors_1.default)({
-    origin: 'http://localhost:5173',
-    credentials: true
+    origin: config_1.config.corsOrigin || 'https://upload-thing-theta.vercel.app',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+    optionsSuccessStatus: 204
 }));
+console.log(config_1.config.corsOrigin);
 exports.app.use(routes_1.blobRoutes);
 exports.app.use(routes_1.authRouter);
 exports.app.listen(config_1.config.port, () => console.log(`server is running on port: ${config_1.config.port}`));
